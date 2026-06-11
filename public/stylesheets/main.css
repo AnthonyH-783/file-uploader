@@ -1,0 +1,10 @@
+/* Base imports */
+@import "./base/reset.css";
+@import "./base/variables.css";
+@import "./base/typography.css";
+
+/* Component imports */
+
+
+/* Page imports */
+@import "./pages/index.css";
