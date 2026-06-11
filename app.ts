@@ -4,6 +4,7 @@ import router from "./routes/index.route";
 const app = express();
 
 // Setting up view engine
+const __dirname = import.meta.dirname; // directory path
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 // Middleware
