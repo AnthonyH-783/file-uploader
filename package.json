@@ -11,10 +11,14 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@quixo3/prisma-session-store": "^3.1.21",
     "@types/ejs": "^3.1.5",
     "@types/express": "^5.0.6",
+    "@types/express-session": "^1.19.0",
     "@types/express-validator": "^2.20.33",
     "@types/node": "^25.9.3",
+    "@types/passport": "^1.0.17",
+    "@types/passport-local": "^1.0.38",
     "@types/pg": "^8.20.0",
     "prisma": "^7.8.0",
     "tsx": "^4.22.4",
@@ -25,7 +29,10 @@
     "@prisma/client": "^7.8.0",
     "dotenv": "^17.4.2",
     "ejs": "^6.0.1",
+    "express-session": "^1.19.0",
     "express-validator": "^7.3.2",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
     "pg": "^8.21.0"
   }
 }

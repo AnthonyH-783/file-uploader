@@ -1,0 +1,154 @@
+:root {
+  /* =========================================================
+     SURFACES
+  ========================================================= */
+
+  --surface-0: #F4F6FA; /* page background (faint gray behind cards) */
+  --surface-1: #FFFFFF; /* cards / panels */
+  --surface-2: #F8FAFC; /* inputs / nested / drop-zone fill */
+  --surface-3: #EFF3F9; /* hover / subtle elevation */
+
+  /* =========================================================
+     BORDERS
+  ========================================================= */
+
+  --border-subtle: #F1F5F9;
+  --border-default: #E2E8F0;
+  --border-strong: #CBD5E1;
+
+  /* =========================================================
+     TEXT
+  ========================================================= */
+
+  --text-primary: #1E293B; /* headings, filenames */
+  --text-secondary: #64748B; /* descriptions, labels */
+  --text-muted: #94A3B8; /* file sizes, counts, placeholders */
+
+  /* =========================================================
+     ACCENTS & SEMANTIC COLOURS
+  ========================================================= */
+
+  --color-accent: #2563EB; /* primary action / links / active tab */
+  --color-accent-hover: #1D4ED8;
+  --color-accent-soft: #EFF6FF; /* pale blue chips / icon circles */
+
+  --color-danger: #EF4444;
+  --color-info: #3B82F6;
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+
+  --color-error-bg: #FEF2F2;
+  --color-error-border: #FECACA;
+  --color-error-text: #B91C1C;
+
+  /* =========================================================
+     FILE-TYPE / ROLE COLOURS
+     (mapped to the badge colours in the upload list)
+  ========================================================= */
+
+  --role-doc: #EF4444;   /* PDF / documents */
+  --role-image: #22C55E; /* images */
+  --role-media: #8B5CF6; /* video / audio */
+
+  /* =========================================================
+     ROLE TINTS (soft backgrounds for icons / badges)
+  ========================================================= */
+
+  --tint-accent: #EFF6FF;
+  --tint-doc: #FEF2F2;
+  --tint-image: #ECFDF5;
+  --tint-media: #F5F3FF;
+
+  --tint-success: #ECFDF5;
+  --tint-danger: #FEF2F2;
+  --tint-info: #EFF6FF;
+  --tint-warning: #FFFBEB;
+
+  /* =========================================================
+     TYPOGRAPHY
+  ========================================================= */
+
+  --font-sans:
+    'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
+
+  /* Font Sizes */
+  --text-xs: 0.6875rem;   /* 11px — micro labels */
+  --text-sm: 0.8125rem;   /* 13px — file sizes, counts */
+  --text-base: 0.875rem;  /* 14px — body / labels */
+  --text-md: 0.9375rem;   /* 15px — filenames, inputs */
+  --text-lg: 1.0625rem;   /* 17px */
+  --text-xl: 1.25rem;     /* 20px — panel headings */
+  --text-2xl: 1.5rem;     /* 24px */
+  --text-3xl: 1.875rem;   /* 30px */
+
+  /* Font Weights */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Line Heights */
+  --leading-tight: 1.2;
+  --leading-snug: 1.35;
+  --leading-base: 1.5;
+  --leading-loose: 1.7;
+
+  /* Letter Spacing */
+  --tracking-tight: -0.02em;
+  --tracking-snug: -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.02em;
+
+  /* =========================================================
+     SPACING
+  ========================================================= */
+
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem;  /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem;    /* 16px */
+  --space-5: 1.5rem;  /* 24px */
+  --space-6: 2rem;    /* 32px */
+  --space-7: 3rem;    /* 48px */
+  --space-8: 4rem;    /* 64px */
+
+  /* =========================================================
+     RADII
+  ========================================================= */
+
+  --radius-sm: 0.5rem;   /* 8px — buttons, inputs */
+  --radius-md: 0.75rem;  /* 12px — cards */
+  --radius-lg: 1rem;     /* 16px — outer panels */
+  --radius-pill: 999px;  /* icon circles, tags */
+
+  /* =========================================================
+     SHADOWS (soft — borders carry most structure)
+  ========================================================= */
+
+  --shadow-sm:
+    0 1px 2px rgba(15, 23, 42, 0.04);
+
+  --shadow-md:
+    0 4px 12px rgba(15, 23, 42, 0.06);
+
+  --shadow-lg:
+    0 12px 28px rgba(15, 23, 42, 0.08);
+
+  --shadow-accent:
+    0 4px 12px rgba(37, 99, 235, 0.24);
+
+  /* =========================================================
+     TRANSITIONS
+  ========================================================= */
+
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+
+  /* =========================================================
+     LAYOUT
+  ========================================================= */
+
+  --container-width: 80rem;   /* ~1280px */
+  --gutter: var(--space-6);
+}
