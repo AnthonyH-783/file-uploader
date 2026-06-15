@@ -1,6 +1,13 @@
 import express from "express";
+import "dotenv/config";
 import path from "node:path";
 import router from "./routes/index.route";
+import configuredSession from "./middleware/authentication/session";
+import passport from "./middleware/authentication/passport";
+import bindUser from "./middleware/authentication/bindUser";
+import { errorLogger } from "./middleware/errorLogger";
+import authRouter from "./routes/auth.route";
+
 const app = express();
 
 // Setting up view engine
@@ -11,9 +18,18 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
+// Setting up user session
+app.use(configuredSession);
+app.use(passport.session());
+app.use(bindUser);
 
 // Routes
-app.use(router);
+app.use("/main", router);
+app.use("/auth", authRouter);
+
+
+// Error logger
+app.use(errorLogger);
 
 // Listening to port
 const port = process.env.PORT;

@@ -3,7 +3,6 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../../generated/prisma/client";
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 import "dotenv/config";
-import { cookie } from "express-validator";
 
 
 // Creating adapter and passing it to prisma client
@@ -36,4 +35,6 @@ const config: SessionOptions = {
 
 
 const configuredSession = expressSession(config);
+
+export default configuredSession;
 
