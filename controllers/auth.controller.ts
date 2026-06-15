@@ -22,6 +22,7 @@ export const logout = (req:Request, res:Response, next:NextFunction) => {
 export const signup = async (req:Request, res:Response, next:NextFunction) => {
     try{
         const {firstName, lastName, email, password} = req.body;
+        console.log("In signup controller");
         const passwordHash = await bcrypt.hash(password, 10);
         const user = await prisma.user.create({
             data: {
@@ -31,10 +32,11 @@ export const signup = async (req:Request, res:Response, next:NextFunction) => {
                 passwordHash
             }
         });
-        res.json(user);
+        return res.json(user);
         // Replace later with res.redirect("/main");
     }
     catch(err){
+        console.error(err);
         const error = new AppError(500, "Error at signup controller");
         return next(error);
 

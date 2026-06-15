@@ -4,6 +4,10 @@ import { verifyDone } from "../../types/types";
 import prisma from "../../db/prisma";
 import bcrypt from "bcrypt";
 
+const customFields = {
+    usernameField: "email",
+    passwordField: "password"
+}
 const verifyCallback = async (email:string, password:string , done: verifyDone) => {
 
     try{
@@ -28,7 +32,7 @@ const verifyCallback = async (email:string, password:string , done: verifyDone) 
 
 }
 
-const strategy = new LocalStrategy.Strategy(verifyCallback);
+const strategy = new LocalStrategy.Strategy(customFields, verifyCallback);
 
 passport.use(strategy);
 
