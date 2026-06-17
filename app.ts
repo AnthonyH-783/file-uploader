@@ -7,6 +7,7 @@ import passport from "./middleware/authentication/passport";
 import bindUser from "./middleware/authentication/bindUser";
 import { errorLogger } from "./middleware/errorLogger";
 import authRouter from "./routes/auth.route";
+import fileRouter from "./routes/file.route";
 import { Request, Response, NextFunction } from "express";
 
 const app = express();
@@ -24,14 +25,12 @@ app.use(configuredSession);
 app.use(passport.session());
 app.use(bindUser);
 
-app.use((req: Request, res: Response, next:NextFunction) => {
-    console.log(res.locals.currentUser);
-    next();
-});
 
 // Routes
+app.get("/", (req: Request, res: Response) => res.redirect("/main"));
 app.use("/main", router);
 app.use("/auth", authRouter);
+app.use("/files", fileRouter);
 
 
 // Error logger

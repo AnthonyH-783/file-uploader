@@ -4,7 +4,7 @@
 @import "./base/typography.css";
 
 /* Component imports */
-
+@import "./components/upload-form.css";
 
 /* Page imports */
 @import "./pages/index.css";
