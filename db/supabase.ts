@@ -13,12 +13,17 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Upload file using standard upload
 export async function uploadFile(file:Express.Multer.File, bucketName:string) {
-  const fileBuffer = await fs.readFile(file.path);
-  const { data, error } = await supabase.storage
-  .from(bucketName)
-  .upload(file.path, fileBuffer, {contentType: file.mimetype});
+    try{
+        const fileBuffer = await fs.readFile(file.path);
+        const { data, error } = await supabase.storage
+        .from(bucketName)
+        .upload(file.path, fileBuffer, {contentType: file.mimetype});
 
-  if (error) throw error;
+        if (error) throw error;
+        return data;
+    }
+    finally{
+        await fs.unlink(file.path); // Deletes the file from server
+    }
 
-  return data;
 }
