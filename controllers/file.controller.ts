@@ -16,7 +16,11 @@ export const saveFile = (req:Request, res:Response , next:NextFunction) => {
             return next(err);
         }
 
-        next();
+            const {body, files} = req;
+    res.status(200).json({
+        body,
+        files
+    })
     })
 }
 
