@@ -10,6 +10,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+
 }
 
 model User{
@@ -30,6 +31,25 @@ model Upload{
   user  User @relation(fields: [userId], references: [id])
   userId Int
   createdAt DateTime @default(now())
+}
+model File {
+  id         String  @id @default(uuid())
+  name       String  // name the user sees
+  storageKey String  @unique // path in the bucket
+  mimeType   String
+  size       Int
+  folderId   String?
+  folder     Folder? @relation(fields: [folderId], references: [id])
+  ownerId    String
+}
+model Folder {
+  id       String   @id @default(uuid())
+  name     String
+  parentId String?
+  parent   Folder?  @relation("Tree", fields: [parentId], references: [id])
+  children Folder[] @relation("Tree")
+  files    File[]
+  ownerId  String
 }
 
 model Session {
