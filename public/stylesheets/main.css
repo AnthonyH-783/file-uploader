@@ -5,6 +5,7 @@
 
 /* Component imports */
 @import "./components/upload-form.css";
+@import "./components/sign-in.css";
 
 /* Page imports */
 @import "./pages/index.css";

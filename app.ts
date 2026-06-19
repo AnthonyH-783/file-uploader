@@ -24,6 +24,14 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(configuredSession);
 app.use(passport.session());
 app.use(bindUser);
+app.use((req:Request, res: Response, next:NextFunction) => {
+    if(res.locals.currentUser){
+        console.log(res.locals.currentUser.id);
+
+    }
+    
+    next();
+})
 
 
 // Routes

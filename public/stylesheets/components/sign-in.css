@@ -1,0 +1,68 @@
+.sign-in-form {
+    max-width: 460px;
+    background: var(--surface-1);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    padding: 2rem;
+}
+
+.sign-in-form__title {
+    margin: 0 0 1.75rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.sign-in-form__group {
+    margin-bottom: 1.5rem;
+}
+
+.sign-in-form__label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.sign-in-form__input {
+    width: 100%;
+    padding: 0.7rem 0.85rem;
+    font-size: 0.95rem;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+}
+
+.sign-in-form__input:focus {
+    border-color: var(--accent);
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+.sign-in-form__error {
+    margin: 0 0 1.5rem;
+    padding: 0.7rem 0.85rem;
+    font-size: 0.85rem;
+    color: var(--text);
+    background: var(--surface-2);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+}
+
+.sign-in-form__button {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--surface-2);
+    background: var(--color-accent);
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.sign-in-form__button:hover { background: var(--color-accent-hover); }
+.sign-in-form__button:focus { outline: 2px solid var(--color-accent); outline-offset: 2px; }

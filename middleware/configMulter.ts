@@ -26,6 +26,7 @@ const limits: multer.Options["limits"]= {
 
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
     const allowedTypes = ["png", "jpeg", "jpg", "gif", "pdf", "webp"];
+
     const subtype = file.mimetype.split("/")[1];
     if(!subtype && !allowedTypes.includes(subtype)){
         return cb(null, false);
@@ -36,6 +37,7 @@ const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilt
 // Utility Function
 function createFileName(file: Express.Multer.File, subtype:string){
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+
     const fileName = file.fieldname + uniqueSuffix + "." + subtype;
     return fileName;
 
