@@ -3,12 +3,28 @@ import prisma from "../db/prisma";
 import bcrypt from "bcrypt";
 import passport from "passport";
 import { AppError } from "../errors/AppError";
-
+import { seedIfNeeded } from "../db/seed";
+/** 
 export const login = passport.authenticate("local", {
     successRedirect: "/main",
     failureRedirect: "/login",
     failureMessage: true
 });
+*/
+export const login = async(req: Request, res: Response, next: NextFunction) => {
+    passport.authenticate("local", (err: unknown, user: Express.User) => {
+        if(err) return next(err);
+        if(!user) return next(new AppError(401, "Invalid credentials"));
+
+        req.login(user, async(loginErr) => {
+            if(loginErr) return next(loginErr);
+            const userId = res.locals.currentUser.id;
+            await seedIfNeeded(userId);
+            res.redirect("/main");
+        })
+
+    })(req, res, next);
+}
 
 export const logout = (req:Request, res:Response, next:NextFunction) => {
     req.logout((err) => {
