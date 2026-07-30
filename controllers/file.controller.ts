@@ -10,11 +10,10 @@ import { Folder } from "../generated/prisma/client";
 const handleUpload = upload.array("uploaded_file");
 
 export const saveFile = (req:Request, res:Response , next:NextFunction) => {
-    // Invoking middleware
+    // Defining error handling for failing to attach files to req
     handleUpload(req, res, (err:unknown) => {
-        console.log("In handleUpload");
+ 
         if(err instanceof multer.MulterError){
-            console.log("in multer error");
             if(err.code.match('415')){
                 return res.redirect(`/main?error=${err.message}`);
             }
@@ -22,71 +21,58 @@ export const saveFile = (req:Request, res:Response , next:NextFunction) => {
             return next(new AppError(400, message, true));
         }
         if(err){
-            console.log("In saveFile error handler");
             return next(err);
         }
-        console.log("At the end of handleupload");
-        next();
+        next(); // Move to next middleware with req.files
 
     })
 }
 
 export const uploadToCloud = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const files = req.files as Express.Multer.File[];
+        // Retrieving files and category from request object
+        const files = (req.files ?? []) as Express.Multer.File[];
         const category: string = req.body.category;
-
         if (!files || files.length === 0) {
             throw new AppError(400, "No files were uploaded", true);
         }
-        // Constructing needed variable
+        // Finding corresponding folder
         const userId = String(res.locals.currentUser.id);
-        console.log(`Here is the category: ${category} and the user id: ${userId}`)
         const folder = await prisma.folder.findFirst({
             where: {name: category, ownerId: String(userId)}
         });
-
         if(!folder){
             throw new AppError(500, "Selected folder does not exist", false);
         }
+
         // Creating array of storage objects
-        const data = files.map((file) => {
-            const fileId = randomUUID();
+        const uploads = files.map((file) => {
+            const id = randomUUID();
             return {
                 file,
-                name: file.filename,
-                mimeType: file.mimetype,
-                id: fileId,
-                ownerId: userId,
-                storageKey: `${userId}/${fileId}`,
-                size: file.size,
-                folderId: folder.id
+                record: {
+                    name: file.filename,
+                    mimeType: file.mimetype,
+                    id,
+                    ownerId: userId,
+                    storageKey: `${userId}/${id}`,
+                    size: file.size,
+                    folderId: folder.id
+                }
             }
         });
 
         // Storing files in database
-        await prisma.file.createManyAndReturn({
-            data: data.map((fileData) => ({
-                name: fileData.name,
-                id: fileData.id,
-                ownerId: fileData.ownerId,
-                storageKey: fileData.storageKey,
-                size: fileData.size,
-                folderId: fileData.folderId,
-                mimeType: fileData.mimeType
-            }))
-        })
+        await prisma.file.createMany({data: uploads.map((upload) => upload.record)});
 
         // Uploading files to supabase storage
-        await Promise.all(
-            data.map(async (fileData) => {
-                await uploadFile(fileData.file, fileData.storageKey);
-                return;
-            })
-        );
+        await Promise.all(uploads.map(async({file, record}) => {
+            await uploadFile(file, record.storageKey)}
+        ));
+      
 
 
-        res.redirect("/main");
+       res.redirect("/main");
     } catch (err) {
     
         next(err);
