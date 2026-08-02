@@ -48,8 +48,7 @@ export const signup = async (req:Request, res:Response, next:NextFunction) => {
                 passwordHash
             }
         });
-        return res.json(user);
-        // Replace later with res.redirect("/main");
+        return res.redirect("/auth/login");
     }
     catch(err){
         console.error(err);
@@ -59,4 +58,11 @@ export const signup = async (req:Request, res:Response, next:NextFunction) => {
     }
 
 
+}
+
+export const getLogin = (req: Request, res: Response, next: NextFunction) => {
+    if(req.isAuthenticated()){
+        return res.redirect("/main");
+    }
+    return res.render("/pages/sign-in");
 }
