@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import prisma from "../db/prisma";
 import { AppError } from "../errors/AppError";
 import { Prisma } from "../generated/prisma/client";
+import { error } from "node:console";
 
 export const createFolder = async (req:Request, res:Response, next:NextFunction) => {
     try{
@@ -65,7 +66,7 @@ export const viewFolder = async(req:Request, res:Response, next:NextFunction) =>
             })
 
         ]);
-        res.render("folders/view", {
+        res.render("components/folder", {
             folder, childFolders, files, error: req.query.error ?? null
         });
         
@@ -74,4 +75,28 @@ export const viewFolder = async(req:Request, res:Response, next:NextFunction) =>
     catch(err){
         next(err);
     }
+}
+
+
+export const renameFolder = async (req:Request, res:Response, next:NextFunction) => {
+    try{
+    // Identifying owner
+    const ownerId = res.locals.currentUser.id;
+    // Getting request information
+    const {folderId} = req.params;
+    const {newName} = req.body;
+    // Finding and validating folder
+    if(!folderId || typeof folderId !== "string" || !ownerId) throw new AppError(403, "Target folder could not be identified");
+    await prisma.folder.update({
+        where: {id: folderId, ownerId},
+        data: {name: newName}
+        
+    }); // throws P2025 prisma error when not found
+    res.redirect(`/folders/${folderId}?msg=${encodeURIComponent("Folder Successfully Renamed")}`);
+    }
+    catch(err){
+        next(err);
+
+    }
+
 }
