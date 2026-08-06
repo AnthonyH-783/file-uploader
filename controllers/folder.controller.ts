@@ -4,6 +4,8 @@ import prisma from "../db/prisma";
 import { AppError } from "../errors/AppError";
 import { Folder, Prisma } from "../generated/prisma/client";
 import { error } from "node:console";
+import { deleteFilesFromStorage } from "../db/supabase";
+import { URLSearchParams } from "node:url";
 
 export const createFolder = async (req:Request, res:Response, next:NextFunction) => {
     try{
@@ -159,14 +161,30 @@ export const deleteFolder = async(req:Request, res:Response, next: NextFunction)
         // Extracting and validating request info
         const {folderId} = req.params;
         const ownerId = res.locals.currentUser.id;
-        if(!folderId || typeof folderId !== "string") throw new AppError(403, "Folder to be deleted could not be identified");
+        if(typeof folderId !== "string") throw new AppError(400, "Folder to be deleted could not be identified");
 
-        // Finding all files under that folder
-        const folder = await prisma.folder.findFirstOrThrow({
-            where: {parentId: folderId, ownerId},
-            select: {storageKey: true}
+        // Checking folder exists
+        const folder = await prisma.folder.findUnique({
+            where: {id: folderId, ownerId},
         });
+        if(!folder) throw new AppError(404, "Folder to be deleted could not be found");
 
+        // Collecting storage keys of all files under folder
+        const storageKeys = await collectStorageKeys(folderId, ownerId);
+        
+        // Deleting database entries first
+        await prisma.folder.delete({
+            where: {id: folderId, ownerId} // folder delete cascades to all files
+        });
+        // Deleting files from storage
+        try{
+            await deleteFilesFromStorage(storageKeys);
+        }
+        catch(err){
+            console.error("Storage cleanup failed after folder delete:", {folderId, err});
+        }
+        const queryString = new URLSearchParams({msg: `${folder.name} deleted`});
+        res.redirect(`/folders/${folder.parentId ?? ''}?${queryString}`);
 
     }
     catch(err){
@@ -183,15 +201,18 @@ async function collectStorageKeys(rootFolderId:string, ownerId:string){
     while(level.length > 0){
         const [files, children] = await Promise.all([
             prisma.file.findMany({
-                where: {folderId: {in: level}},
+                where: {folderId: {in: level}, ownerId},
                 select: {storageKey: true}
             }),
             prisma.folder.findMany({
-                where: {parentId: {in: level}},
+                where: {parentId: {in: level}, ownerId},
                 select: {id: true}
             })
         ]);
+        // Pushing the storage keys of the files at the current level
         keys.push(...files.map((file) => file.storageKey));
+        // Extracting next set of folder ids (next level)
         level = children.map((child) => child.id);
     }
+    return keys;
 }
