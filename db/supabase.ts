@@ -45,7 +45,8 @@ export async function deleteFilesFromStorage(storageKeys:string[]){
         if(error) throw error;
         if(data.length !== batch.length){
             const removed = new Set(data.map((f) => f.name));
-            console.warn("Some storage objects were not removed:", batch.filter((f) => !removed.has(f)));
+            console.warn("Some storage objects were not removed:",
+                 batch.filter((file) => !removed.has(file)));
         }
     }
 }

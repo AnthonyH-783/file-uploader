@@ -155,8 +155,43 @@ async function checkCycle({targetDirId, folderId, ownerId} : {targetDirId:string
 }
 
 export const deleteFolder = async(req:Request, res:Response, next: NextFunction) => {
-    // Extracting and validating request info
-    const {folderId} = req.params;
-    const ownerId = res.locals.currentUser.id;
-    if(!folderId || typeof folderId !== "string") throw new AppError(403, "Folder to be deleted could not be identified");
+    try{
+        // Extracting and validating request info
+        const {folderId} = req.params;
+        const ownerId = res.locals.currentUser.id;
+        if(!folderId || typeof folderId !== "string") throw new AppError(403, "Folder to be deleted could not be identified");
+
+        // Finding all files under that folder
+        const folder = await prisma.folder.findFirstOrThrow({
+            where: {parentId: folderId, ownerId},
+            select: {storageKey: true}
+        });
+
+
+    }
+    catch(err){
+        next(err);
+    }
+
+}
+
+async function collectStorageKeys(rootFolderId:string, ownerId:string){
+    // Initializing key storage and level counter
+    const keys: string[] = [];
+    let level = [rootFolderId];
+
+    while(level.length > 0){
+        const [files, children] = await Promise.all([
+            prisma.file.findMany({
+                where: {folderId: {in: level}},
+                select: {storageKey: true}
+            }),
+            prisma.folder.findMany({
+                where: {parentId: {in: level}},
+                select: {id: true}
+            })
+        ]);
+        keys.push(...files.map((file) => file.storageKey));
+        level = children.map((child) => child.id);
+    }
 }
