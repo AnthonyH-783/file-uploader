@@ -107,7 +107,8 @@ export const moveFolder = async (req:Request, res:Response, next:NextFunction) =
         // Extracting request info
         const {folderId} = req.params;
         const {targetDirId} = req.body;
-        if(typeof folderId !== "string" || typeof targetDirId !== "string"){
+        if((!folderId || typeof folderId !== "string") ||
+           (!targetDirId || typeof targetDirId !== "string")){
             throw new AppError(403,"Some folder(s) could not be identified");
         }
         if(folderId === targetDirId){
@@ -151,4 +152,11 @@ async function checkCycle({targetDirId, folderId, ownerId} : {targetDirId:string
         });
         if(!parent){cursor = null} else cursor = parent.parentId;
     }
+}
+
+export const deleteFolder = async(req:Request, res:Response, next: NextFunction) => {
+    // Extracting and validating request info
+    const {folderId} = req.params;
+    const ownerId = res.locals.currentUser.id;
+    if(!folderId || typeof folderId !== "string") throw new AppError(403, "Folder to be deleted could not be identified");
 }
