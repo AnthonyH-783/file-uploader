@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express"
 import { randomUUID } from "node:crypto";
 import prisma from "../db/prisma";
 import { AppError } from "../errors/AppError";
-import { Prisma } from "../generated/prisma/client";
+import { Folder, Prisma } from "../generated/prisma/client";
 import { error } from "node:console";
 
 export const createFolder = async (req:Request, res:Response, next:NextFunction) => {
@@ -98,5 +98,57 @@ export const renameFolder = async (req:Request, res:Response, next:NextFunction)
         next(err);
 
     }
+}
 
+export const moveFolder = async (req:Request, res:Response, next:NextFunction) => {
+    try{
+        // Identifying owner
+        const ownerId = res.locals.currentUser.id;
+        // Extracting request info
+        const {folderId} = req.params;
+        const {targetDirId} = req.body;
+        if(typeof folderId !== "string" || typeof targetDirId !== "string"){
+            throw new AppError(403,"Some folder(s) could not be identified");
+        }
+        if(folderId === targetDirId){
+            throw new AppError(400, "Cannot move folder into itelsef");
+        }
+        // Finding and validating folders
+        const [folder, targetDir] = await Promise.all([
+            prisma.folder.findUniqueOrThrow({where: {id: folderId, ownerId}}),
+            prisma.folder.findUniqueOrThrow({where: {id: targetDirId, ownerId}})
+        ]); // Throws P2025 if not found
+        if(!folder || !targetDir) throw new AppError(403, "Folders not found");
+
+        // Checking for cycles and throwing error is one found
+        await checkCycle({targetDirId, folderId, ownerId});
+
+        // Changing parent id to point to the new directory
+        await prisma.folder.update({
+                where: {id: folderId, ownerId},
+                data: {parentId: targetDirId}
+            })
+        const queryString = new URLSearchParams({
+            msg: `${folder.name} moved to ${targetDir.name}`
+        }); 
+        res.redirect(`/folders/${folder.parentId}?${queryString}`);
+    
+    }
+    catch(err){
+        next(err);
+    }
+}
+
+async function checkCycle({targetDirId, folderId, ownerId} : {targetDirId:string, folderId:string, ownerId:string}){
+    let cursor: string | null = targetDirId;
+    while(cursor){
+        if(cursor === folderId){
+            throw new AppError(400, "Cannot move folder into itself or its subfolders");
+        }
+        const parent: {parentId: string | null} | null = await prisma.folder.findUnique({
+            where: {id: cursor, ownerId},
+            select: {parentId: true}
+        });
+        if(!parent){cursor = null} else cursor = parent.parentId;
+    }
 }
