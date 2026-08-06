@@ -34,3 +34,21 @@ export async function uploadFile(file:Express.Multer.File, storageKey:string) {
 
 
 
+export async function deleteFilesFromStorage(storageKeys:string[]){
+    const MAX_BULK_DELETE = 1000;
+    // Validating storageKeys array
+    if(storageKeys.length === 0) return;
+    // Slicing storageKeys in batches if size beyond 1000
+    for(let i = 0; i < storageKeys.length; i += MAX_BULK_DELETE){
+        const batch = storageKeys.slice(i, i + MAX_BULK_DELETE);
+        const {data, error} = await supabase.storage.from(BUCKET as string).remove(batch);
+        if(error) throw error;
+        if(data.length !== batch.length){
+            const removed = new Set(data.map((f) => f.name));
+            console.warn("Some storage objects were not removed:", batch.filter((f) => !removed.has(f)));
+        }
+    }
+}
+
+
+
