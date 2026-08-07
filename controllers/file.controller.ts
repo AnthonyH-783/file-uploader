@@ -9,7 +9,7 @@ import { Folder } from "../generated/prisma/client";
 
 const handleUpload = upload.array("uploaded_file");
 
-export const saveFile = (req:Request, res:Response , next:NextFunction) => {
+export const multerErrHandling = (req:Request, res:Response , next:NextFunction) => {
     // Defining error handling for failing to attach files to req
     handleUpload(req, res, (err:unknown) => {
  
@@ -28,39 +28,26 @@ export const saveFile = (req:Request, res:Response , next:NextFunction) => {
     })
 }
 
-export const uploadToCloud = async (req: Request, res: Response, next: NextFunction) => {
+export const saveFile = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        // Retrieving files and category from request object
+        // Retrieving request info - files, category, user
         const files = (req.files ?? []) as Express.Multer.File[];
         const category: string = req.body.category;
         if (!files || files.length === 0) {
             throw new AppError(400, "No files were uploaded", true);
         }
-        // Finding corresponding folder
-        const userId = String(res.locals.currentUser.id);
+        const userId = res.locals.currentUser.id;
+
+        // Finding target folder
         const folder = await prisma.folder.findFirst({
-            where: {name: category, ownerId: String(userId)}
+            where: {name: category, ownerId: userId}
         });
         if(!folder){
-            throw new AppError(500, "Selected folder does not exist", false);
+            throw new AppError(404, "Selected folder does not exist", false);
         }
 
         // Creating array of storage objects
-        const uploads = files.map((file) => {
-            const id = randomUUID();
-            return {
-                file,
-                record: {
-                    name: file.filename,
-                    mimeType: file.mimetype,
-                    id,
-                    ownerId: userId,
-                    storageKey: `${userId}/${id}`,
-                    size: file.size,
-                    folderId: folder.id
-                }
-            }
-        });
+        const uploads = prepareFilesForUpload(files, folder.id, userId);
 
         // Storing files in database
         await prisma.file.createMany({data: uploads.map((upload) => upload.record)});
@@ -78,3 +65,23 @@ export const uploadToCloud = async (req: Request, res: Response, next: NextFunct
         next(err);
     }
 };
+
+function prepareFilesForUpload(files: Express.Multer.File[], folderId:string, userId:string){
+    
+    return files.map((file) => {
+        const id = randomUUID();
+        return {
+            file,
+            record: {
+                name: file.filename,
+                mimeType: file.mimetype,
+                id,
+                ownerId: userId,
+                storageKey: `${userId}/${id}`,
+                size: file.size,
+                folderId
+            }
+        }
+    })
+
+}
