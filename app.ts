@@ -5,7 +5,7 @@ import router from "./routes/index.route";
 import configuredSession from "./middleware/authentication/session";
 import passport from "./middleware/authentication/passport";
 import bindUser from "./middleware/authentication/bindUser";
-import { errorLogger } from "./middleware/errorLogger";
+import { errorHandler } from "./middleware/errorLogger";
 import authRouter from "./routes/auth.route";
 import fileRouter from "./routes/file.route";
 import { Request, Response, NextFunction } from "express";
@@ -42,7 +42,7 @@ app.use("/files", fileRouter);
 
 
 // Error logger
-app.use(errorLogger);
+app.use(errorHandler);
 
 // Listening to port
 const port = process.env.PORT;

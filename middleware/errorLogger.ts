@@ -50,7 +50,7 @@ export const errorHandler = (err: unknown, req: Request, res: Response, next: Ne
   const body = expose ? message : "Internal server error";
 
   if (req.accepts("html")) {
-    return res.status(status).render("error", { status, message: body });
+    return res.status(status).render("components/error", { status, message: body });
   }
   return res.status(status).json({ message: body });
 };

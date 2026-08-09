@@ -8,6 +8,6 @@ import * as fileController from "../controllers/file.controller";
     
 const fileRouter = express.Router();
 
-fileRouter.post("/upload", fileController.saveFile, fileController.uploadToCloud);
+fileRouter.post("/upload", fileController.multerErrHandling, fileController.saveFile);
 
 export default fileRouter;

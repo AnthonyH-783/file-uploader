@@ -40,7 +40,7 @@ passport.serializeUser((user: Express.User, done) => {
     return done(null, user.id);
 });
 
-passport.deserializeUser(async(id: number, done:verifyDone) => {
+passport.deserializeUser(async(id: string, done:verifyDone) => {
     try{
 
         const user = await prisma.user.findUnique({
