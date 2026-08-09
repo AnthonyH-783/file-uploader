@@ -2,10 +2,11 @@ import upload from "../middleware/configMulter";
 import { Request, Response, NextFunction } from "express";
 import multer from "multer";
 import { AppError } from "../errors/AppError";
-import { uploadFile } from "../db/supabase";
+import { deleteFilesFromStorage, uploadFile } from "../db/supabase";
 import prisma from "../db/prisma";
 import { randomUUID } from "node:crypto";
 import { Folder } from "../generated/prisma/client";
+import { URLSearchParams } from "node:url";
 
 const handleUpload = upload.array("uploaded_file");
 
@@ -83,5 +84,58 @@ function prepareFilesForUpload(files: Express.Multer.File[], folderId:string, us
             }
         }
     })
+}
 
+export const renameFile = async(req:Request, res: Response, next: NextFunction) => {
+    try{
+        // Extracting request info
+        const {fileId} = req.params;
+        const {newName, parentId} = req.body;
+        const ownerId = res.locals.currentUser.id;
+        // Validating parameters
+        if(typeof fileId !== "string" || typeof newName !== "string" || typeof parentId !== "string") throw new AppError(400, "Invalid parameters given for renaming file");
+        const title = newName.trim();
+        if(title.length > 50){
+            return res.redirect(`/folders/${parentId}?error=${encodeURIComponent("File name cannot exceed 50 characters")}`);
+            
+        }
+        // Updating file info
+        const file = await prisma.file.update({
+            where: {id: fileId, ownerId},
+            data: {name: title}
+        });
+        res.status(200).redirect(`/folders/${file.folderId}`);
+    }
+    catch(err){
+        next(err);
+    }
+
+}
+
+export const deleteFile = async(req:Request, res:Response, next:NextFunction) => {
+    try{
+        const {fileId} = req.params;
+        const ownerId = res.locals.currentUser.id;
+        if(typeof fileId !== "string") throw new AppError(400, "Invalid file id procured");
+        // Retrieving storage key
+        const {storageKey, folderId, name} = await prisma.file.delete({
+            where: {id: fileId, ownerId},
+            select: {storageKey: true, folderId: true, name:true}
+        });
+        // Deleting file in storage
+        try{
+             await deleteFilesFromStorage([storageKey]);
+        }
+        catch(err){
+            console.error("Storage delete failed", {ownerId, message: (err as Error).message});
+        }
+        const query = new URLSearchParams({msg: `${name} deleted`});
+        res.redirect(`/folders/${folderId}?${query}`);
+       
+
+    }
+    catch(err){
+        next(err);
+
+    }
 }
