@@ -1,0 +1,45 @@
+<form class="sign-in-form" action="/auth/signup" method="POST">
+
+  <h1 class="sign-in-form__title">Sign up</h1>
+
+  <div class="sign-in-form__group">
+    <label class="sign-in-form__label" for="email">Email</label>
+    <input
+      class="sign-in-form__input"
+      type="email"
+      id="email"
+      name="email"
+      autocomplete="email"
+      required
+    />
+  </div>
+
+  <div class="sign-in-form__group">
+    <label class="sign-in-form__label" for="password">Password</label>
+    <input
+      class="sign-in-form__input"
+      type="password"
+      id="password"
+      name="password"
+      autocomplete="new-password"
+      minlength="8"
+      required
+    />
+  </div>
+
+  <div class="sign-in-form__group">
+    <label class="sign-in-form__label" for="confirmPassword">Confirm password</label>
+    <input
+      class="sign-in-form__input"
+      type="password"
+      id="confirmPassword"
+      name="confirmPassword"
+      autocomplete="new-password"
+      minlength="8"
+      required
+    />
+  </div>
+
+  <button class="sign-in-form__button" type="submit">Sign up</button>
+  <a class="auth-link" href="/auth/login">Have an account ? Login</a>
+</form>
