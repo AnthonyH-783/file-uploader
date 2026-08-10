@@ -9,6 +9,8 @@ import { errorHandler } from "./middleware/errorLogger";
 import authRouter from "./routes/auth.route";
 import fileRouter from "./routes/file.route";
 import { Request, Response, NextFunction } from "express";
+import { requireAuth } from "./middleware/authentication/requireAuth";
+import { copyResetFormData } from "./middleware/resetFormData";
 
 const app = express();
 
@@ -24,19 +26,12 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(configuredSession);
 app.use(passport.session());
 app.use(bindUser);
-app.use((req:Request, res: Response, next:NextFunction) => {
-    if(res.locals.currentUser){
-        console.log(res.locals.currentUser.id);
-
-    }
-    
-    next();
-})
-
+// Form data middleware for redirects
+app.use(copyResetFormData);
 
 // Routes
 app.get("/", (req: Request, res: Response) => res.redirect("/main"));
-app.use("/main", router);
+app.use("/main", requireAuth, router);
 app.use("/auth", authRouter);
 app.use("/files", fileRouter);
 

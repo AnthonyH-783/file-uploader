@@ -4,6 +4,8 @@ import bcrypt from "bcrypt";
 import passport from "passport";
 import { AppError } from "../errors/AppError";
 import { seedIfNeeded } from "../db/seed";
+import { validationResult, matchedData } from "express-validator";
+import { PrismaClientKnownRequestError } from "../generated/prisma/internal/prismaNamespace";
 /** 
 export const login = passport.authenticate("local", {
     successRedirect: "/main",
@@ -37,10 +39,17 @@ export const logout = (req:Request, res:Response, next:NextFunction) => {
 
 export const signup = async (req:Request, res:Response, next:NextFunction) => {
     try{
-        const {firstName, lastName, email, password} = req.body;
-        console.log("In signup controller");
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            // Saving re-direction data in session
+            const {firstName, lastName, email} = req.body;
+            req.session.formData = {firstName, lastName, email};
+            req.session.formErrors = errors.array().map((error) => error.msg);
+            return req.session.save(() => res.redirect("/auth/signup"));
+        }
+        const {firstName, lastName, email, password} = matchedData(req);
         const passwordHash = await bcrypt.hash(password, 10);
-        const user = await prisma.user.create({
+        await prisma.user.create({
             data: {
                 firstName,
                 lastName,
@@ -51,12 +60,12 @@ export const signup = async (req:Request, res:Response, next:NextFunction) => {
         return res.redirect("/auth/login");
     }
     catch(err){
-        console.error(err);
-        const error = new AppError(500, "Error at signup controller");
-        return next(error);
-
+        if(err instanceof PrismaClientKnownRequestError && err.code === "P2002"){
+            const query = new URLSearchParams({error: "Email already in use"});
+            return res.redirect(`/auth/signup?${query}`);
+        }
+        return next(err);
     }
-
 
 }
 
@@ -64,5 +73,12 @@ export const getLogin = (req: Request, res: Response, next: NextFunction) => {
     if(req.isAuthenticated()){
         return res.redirect("/main");
     }
-    return res.render("/pages/sign-in");
+    return res.render("pages/sign-in");
+}
+
+export const getSignup = (req:Request, res:Response, next:NextFunction) => {
+    if(req.isAuthenticated()){
+        return res.redirect("/main");
+    }
+    return res.render("pages/sign-up");
 }
