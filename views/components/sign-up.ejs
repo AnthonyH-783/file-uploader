@@ -1,15 +1,44 @@
 <form class="sign-in-form" action="/auth/signup" method="POST">
 
   <h1 class="sign-in-form__title">Sign up</h1>
-
-  <div class="sign-in-form__group">
+  <%if(formErrors.length !== 0){%>
+    <%-include("error")%>
+    <% } %>
+    <div class="sign-in-form__group">
     <label class="sign-in-form__label" for="email">Email</label>
     <input
       class="sign-in-form__input"
       type="email"
       id="email"
+      value="<%= formData.email || '' %>"
       name="email"
       autocomplete="email"
+      required
+    />
+  </div>
+
+  <div class="sign-in-form__group">
+    <label class="sign-in-form__label" for="firstName">First Name</label>
+    <input
+      class="sign-in-form__input"
+      type="text"
+      id="firstName"
+      value="<%= formData.firstName || '' %>"
+      name="firstName"
+      autocomplete="First Name"
+      required
+    />
+  </div>
+
+  <div class="sign-in-form__group">
+    <label class="sign-in-form__label" for="lastName">Last Name</label>
+    <input
+      class="sign-in-form__input"
+      type="text"
+      id="lastName"
+      value="<%= formData.lastName || '' %>"
+      name="lastName"
+      autocomplete="Last Name"
       required
     />
   </div>

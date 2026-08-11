@@ -1,4 +1,6 @@
 .sign-in-form {
+    display: flex;
+    flex-direction: column;
     max-width: 460px;
     background: var(--surface-1);
     border: 1px solid var(--border-default);
@@ -15,6 +17,8 @@
 
 .sign-in-form__group {
     margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .sign-in-form__label {
@@ -62,6 +66,9 @@
     border-radius: var(--radius-md);
     cursor: pointer;
     transition: background 0.15s ease;
+}
+.auth-link{
+    align-self: center;
 }
 
 .sign-in-form__button:hover { background: var(--color-accent-hover); }

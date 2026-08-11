@@ -1,11 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error <%=</title>
-</head>
-<body>
-    
-</body>
-</html>
+<!-- Expcted variables in res.locals: res.locals.formErrors -->
+ <div class="error-container">
+    <h4>Please fix the following error(s)</h4>
+    <ul class="error-list">
+        <%for(let errorMsg of locals.formErrors){%>
+            <li><%=errorMsg%></li>
+        <% } %>
+
+    </ul>
+ </div>

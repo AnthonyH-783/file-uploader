@@ -1,0 +1,10 @@
+.error-container{
+    background-color: var(--color-danger);
+    color: var(--surface-2);
+    padding: var(--space-2);
+}
+.error-list{
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+}

@@ -6,6 +6,7 @@
 /* Component imports */
 @import "./components/upload-form.css";
 @import "./components/sign-in.css";
+@import "./components/error.css";
 
 /* Page imports */
 @import "./pages/index.css";

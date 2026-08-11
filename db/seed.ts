@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import prisma from "./prisma";
 import {Request, Response, NextFunction } from "express";
 
-export async function seedIfNeeded(userId:number){
+export async function seedIfNeeded(userId:string){
     // Conditional update upon firt login
     const claimed = await prisma.user.updateMany({
         where: {id: userId,  seededAt: null},
@@ -11,9 +11,9 @@ export async function seedIfNeeded(userId:number){
     if(claimed.count === 0){
         return false;
     }
-    await prisma.$transaction([
+    await prisma.$transaction([ // using transaction for potentially multiple steps
         prisma.folder.create({
-            data: {name: "uncategorized", ownerId: String(userId)}
+            data: {name: "uncategorized", ownerId: userId}
         })
     ]);
 

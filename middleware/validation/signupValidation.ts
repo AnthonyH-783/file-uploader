@@ -50,6 +50,8 @@ export const validateSignup = (): ValidationChain[] => [
 ];
 
 async function checkEmailNotInUse(value: string) {
+    console.log("Entered email check");
   const user = await prisma.user.findUnique({ where: { email: value } });
+  console.log("after email check");
   if (user) throw new Error("Email already in use");
 }
