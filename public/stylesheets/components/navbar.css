@@ -1,0 +1,23 @@
+.navbar{
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-6);
+    background-color: var(--surface-1);
+    width: 100%;
+}
+.navbar__tabs{
+    display: flex;
+    gap: var(--space-6);
+    list-style: none;
+}
+a.selected{
+    border-bottom: 2px solid blue;
+    padding-bottom: var(--space-1);
+}
+
+
+.navbar__logout button{
+    all: unset;
+    cursor: pointer;
+    
+}

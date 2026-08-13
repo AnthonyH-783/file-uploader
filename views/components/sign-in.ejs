@@ -1,6 +1,9 @@
 <form class="sign-in-form" action="/auth/login" method="POST">
 
     <h1 class="sign-in-form__title">Sign in</h1>
+    <% if(formErrors.length !== 0){ %>
+      <%-include("error")%>
+      <% } %>
 
     <div class="sign-in-form__group">
       <label class="sign-in-form__label" for="username">Email</label>

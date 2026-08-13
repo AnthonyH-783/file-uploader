@@ -1,0 +1,18 @@
+<nav class="navbar">
+    <ul class="navbar__tabs">
+        <% console.log(selected);%>
+        <li><a class="<%= (selected === 'upload') ? 'selected' : '' %>"
+               href="/main/upload">Upload
+            </a>
+        </li>
+
+        <li><a class="<%= (selected === 'folders') ? 'selected' : '' %>"
+               href="/main/folders">Folders
+            </a>
+        </li>
+
+    </ul>
+    <form class="navbar__logout" action="/auth/logout" method="post">
+        <button>Log out</button>
+    </form>
+</nav>

@@ -34,6 +34,7 @@ export const saveFile = async (req: Request, res: Response, next: NextFunction) 
         // Retrieving request info - files, category, user
         const files = (req.files ?? []) as Express.Multer.File[];
         const category: string = req.body.category;
+        console.log(category);
         if (!files || files.length === 0) {
             throw new AppError(400, "No files were uploaded", true);
         }

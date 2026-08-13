@@ -1,6 +1,7 @@
 .upload-form {
 
-    max-width: 460px;
+    min-width: 40vw;
+    max-width: 75vw;
     background: var(--surface-1);
     border: 1px solid var(--border-default);
     border-radius: var(--radius-md);

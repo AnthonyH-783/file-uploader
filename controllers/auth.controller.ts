@@ -16,12 +16,15 @@ export const login = passport.authenticate("local", {
 export const login = async(req: Request, res: Response, next: NextFunction) => {
     passport.authenticate("local", (err: unknown, user: Express.User) => {
         if(err) return next(err);
-        if(!user) return next(new AppError(401, "Invalid credentials"));
+        if(!user){
+            const errMsg = 'Wrong email or password';
+            req.session.formErrors = [errMsg];
+            return req.session.save(() => res.redirect("/auth/login"));
+        }
 
         req.login(user, async(loginErr) => {
             if(loginErr) return next(loginErr);
-            //const userId = user.id;
-            //await seedIfNeeded(userId);
+            await seedIfNeeded(user.id);
             res.redirect("/main");
         })
 
@@ -33,7 +36,7 @@ export const logout = (req:Request, res:Response, next:NextFunction) => {
         if(err) {
             return next(err);
         }
-        res.redirect("/login");
+        res.redirect("/auth/login");
     });
 }
 

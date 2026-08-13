@@ -11,6 +11,7 @@ import fileRouter from "./routes/file.route";
 import { Request, Response, NextFunction } from "express";
 import { requireAuth } from "./middleware/authentication/requireAuth";
 import { copyResetFormData } from "./middleware/resetFormData";
+import folderRouter from "./routes/folder.route";
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use(copyResetFormData);
 app.get("/", (req: Request, res: Response) => res.redirect("/main"));
 app.use("/main", requireAuth, router);
 app.use("/auth", authRouter);
+app.use("/folders", folderRouter);
 app.use("/files", fileRouter);
 
 
