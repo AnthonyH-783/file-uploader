@@ -1,0 +1,20 @@
+.folders-section__header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.folders-section__table{
+    width: 50vw;
+}
+.folders-section__table td, .folders-section__table th{
+    text-align: left;
+}
+.folders-section__nav__btns{
+    display: flex;
+}
+.folders-section__nav__btns div{
+    background-color: var( --color-accent-soft);
+    border: 1px solid black;
+    cursor: pointer;
+}

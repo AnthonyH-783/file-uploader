@@ -1,9 +1,8 @@
 import {Request, Response, NextFunction} from "express";
 
 export const requireAuth = (req:Request, res:Response, next:NextFunction) => {
-    if(!req.isAuthenticated()){
+    if(req.isUnauthenticated()){
         return res.redirect("/auth/login");
     }
-    console.log(res.locals.currentUser);
     next();
 }

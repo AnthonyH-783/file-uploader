@@ -61,7 +61,7 @@ export const saveFile = async (req: Request, res: Response, next: NextFunction) 
       
 
 
-       res.redirect("/main");
+       res.redirect("/upload");
     } catch (err) {
     
         next(err);

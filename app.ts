@@ -31,11 +31,11 @@ app.use(bindUser);
 app.use(copyResetFormData);
 
 // Routes
-app.get("/", (req: Request, res: Response) => res.redirect("/main"));
-app.use("/main", requireAuth, router);
+app.get("/", (req: Request, res: Response) => res.redirect("/upload"));
+app.use("/upload", requireAuth, router);
 app.use("/auth", authRouter);
-app.use("/folders", folderRouter);
-app.use("/files", fileRouter);
+app.use("/folders", requireAuth, folderRouter);
+app.use("/files", requireAuth, fileRouter);
 
 
 // Error logger

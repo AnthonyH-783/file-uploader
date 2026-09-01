@@ -2,10 +2,11 @@ import { Request, Response, NextFunction } from "express"
 import { randomUUID } from "node:crypto";
 import prisma from "../db/prisma";
 import { AppError } from "../errors/AppError";
-import { Folder, Prisma } from "../generated/prisma/client";
+import {File, Folder, Prisma } from "../generated/prisma/client";
 import { error } from "node:console";
 import { deleteFilesFromStorage } from "../db/supabase";
 import { URLSearchParams } from "node:url";
+import { format } from "date-fns";
 
 export const createFolder = async (req:Request, res:Response, next:NextFunction) => {
     try{
@@ -46,6 +47,8 @@ export const viewFolder = async(req:Request, res:Response, next:NextFunction) =>
         const {folderId} = req.params ?? null;
         // Destructuring query params with default 
         const {sort = "name", dir = "asc"} = req.query;
+        const page   = Math.max(1, Number(req.query.page) || 1);
+        const limit  = Math.min(20, Math.max(1, Number(req.query.limit) || 20));
         // Sorting object parameter used by prisma
         const orderBy = {[sort as string] : dir as "asc" | "desc"};
 
@@ -57,22 +60,27 @@ export const viewFolder = async(req:Request, res:Response, next:NextFunction) =>
             });
             if(!folder) throw new AppError(404, "Folder not found");
         }
-        const [childFolders, files] = await Promise.all([
-            prisma.folder.findMany({
+        const [folders, files] = await Promise.all([
+            (page as number) === 1 ?
+             prisma.folder.findMany({
                 where:{ownerId, parentId: folderId as string},
                 orderBy
-            }),
+            }) : Promise.resolve([]),
+            ((page as number) > 1) ? 
             prisma.file.findMany({
                 where:{ownerId, parentId: folderId as string},
-                orderBy
-            })
+                orderBy,
+                take: limit as number,
+                skip: ((page as number) - 2) * (limit as number)
+            }) : Promise.resolve([])
 
         ]);
-        res.render("components/folder", {
-            folder, childFolders, files, error: req.query.error ?? null
+        const formatedDates = formatLastUpdated([...folders, ...files]);
+        res.render("index", {
+            selected: "folders", folder, folders, files, page,
+            formatedDates, error: req.query.error ?? null
         });
         
-
     }
     catch(err){
         next(err);
@@ -215,4 +223,12 @@ async function collectStorageKeys(rootFolderId:string, ownerId:string){
         level = children.map((child) => child.id);
     }
     return keys;
+}
+
+function formatLastUpdated(objs: { id: string; updatedAt: Date }[]): Record<string, string> {
+  const formatted: Record<string, string> = {};
+  for (const obj of objs) {
+    formatted[obj.id] = format(obj.updatedAt, "MMM d, y");
+  }
+  return formatted;
 }

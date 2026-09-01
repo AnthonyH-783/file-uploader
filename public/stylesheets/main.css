@@ -8,6 +8,7 @@
 @import "./components/sign-in.css";
 @import "./components/error.css";
 @import "./components/navbar.css";
+@import "./components/folders-list.css";
 
 /* Page imports */
 @import "./pages/index.css";

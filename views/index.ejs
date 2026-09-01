@@ -7,9 +7,15 @@
     <title>File Uploader</title>
 </head>
 <body>
-    
     <%-include("components/navbar", {selected})%>
-    <%-include("components/upload-form", {categories})%>
+    <% if(selected === 'upload'){ %>
+            <%-include("components/upload-form", {categories})%>
+    <% } else if(selected === 'folders') { %>
+            <%-include("components/folders-list", {folders}) %>
+    <% } else { %>
+        <%-include("pages/error", {status:401, message: 'Page not found'})%>
+    <% } %>
+
 
 
 </body>

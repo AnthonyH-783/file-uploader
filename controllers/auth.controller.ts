@@ -25,7 +25,7 @@ export const login = async(req: Request, res: Response, next: NextFunction) => {
         req.login(user, async(loginErr) => {
             if(loginErr) return next(loginErr);
             await seedIfNeeded(user.id);
-            res.redirect("/main");
+            res.redirect("/upload");
         })
 
     })(req, res, next);
@@ -79,14 +79,14 @@ export const signup = async (req:Request, res:Response, next:NextFunction) => {
 
 export const getLogin = (req: Request, res: Response, next: NextFunction) => {
     if(req.isAuthenticated()){
-        return res.redirect("/main");
+        return res.redirect("/upload");
     }
     return res.render("pages/sign-in");
 }
 
 export const getSignup = (req:Request, res:Response, next:NextFunction) => {
     if(req.isAuthenticated()){
-        return res.redirect("/main");
+        return res.redirect("/upload");
     }
     return res.render("pages/sign-up");
 }
