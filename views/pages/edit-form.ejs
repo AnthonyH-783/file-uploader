@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit <%=docType%></title>
+</head>
+<body>
+    <form class="edit-form" action="/<%=docType%>s/<%=docId%>/edit" method="post">
+        <h3>Edit <%=docType%></h3>
+        <div class="edit-form__name">
+            <label for="name"><%=docType%> name</label>
+            <input name="name" type="text" value="<%=docName%>">
+        </div>
+        <div class="edit-form__location">
+            <label for="location"><%=docType%> location</label>
+            <select name="location" id="location">
+                <option value="" selected disabled><%=currentCategory?.name ?? "Root Folder"%></option>
+                <% for(const category of categories){%>
+                <option value="<%=category.id%>" <%=category.id === currentCategory.id ? 'selected' : ''%> >
+                    <%=category.name%>
+                </option>
+                <% } %>
+            </select>
+        </div>
+        <button type="submit">Edit</button>
+        <a href="/folders">Cancel</a>
+    </form>
+    
+</body>
+</html>

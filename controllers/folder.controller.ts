@@ -224,6 +224,22 @@ async function collectStorageKeys(rootFolderId:string, ownerId:string){
     }
     return keys;
 }
+async function collectDescendantIds(rootFolderId:string, ownerId:string){
+    // Initializing id and level arrays
+    const idList: string[] = [];
+    let level = [rootFolderId];
+
+    while(level.length > 0){
+        const children = await prisma.folder.findMany({
+            where: {parentId : {in:level}},
+            select: {id: true}
+        });
+        const childrenIds = children.map((child) => child.id);
+        idList.push(...childrenIds);
+        level = childrenIds;
+    }
+    return idList;
+}
 
 function formatLastUpdated(objs: { id: string; updatedAt: Date }[]): Record<string, string> {
   const formatted: Record<string, string> = {};
@@ -231,4 +247,34 @@ function formatLastUpdated(objs: { id: string; updatedAt: Date }[]): Record<stri
     formatted[obj.id] = format(obj.updatedAt, "MMM d, y");
   }
   return formatted;
+}
+
+export const getFolderEditForm = async(req:Request, res:Response) => {
+    // Extracting user and folder ids
+    const {folderId} = req.params;
+    const userId = res.locals.currentUser.id;
+    if(typeof folderId !== 'string' || typeof userId !== 'string') throw new AppError(401, "Folder could not be idnetified");
+    // Extracting folder name and current category
+
+    const folder = await prisma.folder.findUniqueOrThrow({
+        where: {ownerId: userId, id: folderId},
+        select: {name: true, parent:
+                             {select: {id: true, name: true}}
+            }
+    });
+    const currentCategory = folder.parent ?? null;
+    // Choosing valid categories to move to
+    const descendants = await collectDescendantIds(folderId, userId);
+    const categories = await prisma.folder.findMany({
+        where: {ownerId: userId, id: {notIn: [folderId, ...descendants]}},
+        select: {name: true, id: true}
+    });
+    
+    res.render("pages/edit-form", {
+        docId: folderId,
+        docType: "folder",
+        docName: folder.name,
+        categories,
+        currentCategory
+    })
 }
