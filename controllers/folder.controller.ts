@@ -44,7 +44,7 @@ export const viewFolder = async(req:Request, res:Response, next:NextFunction) =>
     try{
         // Extracting identifying info
         const ownerId = res.locals.currentUser.id;
-        const {folderId} = req.params ?? null;
+        const folderId = req.params.folderId ?? null;
         // Destructuring query params with default 
         const {sort = "name", dir = "asc"} = req.query;
         const page   = Math.max(1, Number(req.query.page) || 1);
@@ -60,22 +60,23 @@ export const viewFolder = async(req:Request, res:Response, next:NextFunction) =>
             });
             if(!folder) throw new AppError(404, "Folder not found");
         }
+    
         const [folders, files] = await Promise.all([
-            (page as number) === 1 ?
-             prisma.folder.findMany({
-                where:{ownerId, parentId: folderId as string},
-                orderBy
-            }) : Promise.resolve([]),
-            ((page as number) > 1) ? 
+            prisma.folder.findMany({
+                where: {ownerId, parentId: folderId as string},
+                orderBy,
+                take: limit as number, 
+                skip: ((page as number) - 1) * (limit as number)
+            }),
             prisma.file.findMany({
-                where:{ownerId, parentId: folderId as string},
+                where: {ownerId, folderId: folderId as string},
                 orderBy,
                 take: limit as number,
-                skip: ((page as number) - 2) * (limit as number)
-            }) : Promise.resolve([])
-
+                skip: ((page as number) - 1) * (limit as number)
+            })
         ]);
         const formatedDates = formatLastUpdated([...folders, ...files]);
+
         res.render("index", {
             selected: "folders", folder, folders, files, page,
             formatedDates, error: req.query.error ?? null

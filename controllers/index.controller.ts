@@ -4,7 +4,6 @@ export const getIndex = async (req: Request, res: Response, next: NextFunction) 
     // Retrieving user and folder info
     const ownerId = res.locals.currentUser.id;
     const tab = req.baseUrl.slice(1);
-    console.log("here is the selected tab: ", tab);
     const folders = await prisma.folder.findMany({
         where: {ownerId},
         

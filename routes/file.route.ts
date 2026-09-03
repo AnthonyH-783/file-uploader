@@ -9,5 +9,6 @@ import * as fileController from "../controllers/file.controller";
 const fileRouter = express.Router();
 
 fileRouter.post("/upload", fileController.multerErrHandling, fileController.saveFile);
+fileRouter.get("/:fileId", fileController.showFile);
 
 export default fileRouter;

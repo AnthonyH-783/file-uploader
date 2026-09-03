@@ -1,0 +1,14 @@
+.file__display{
+    width: 60vw;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+    position: relative;
+    padding: var(--space-4);
+}
+.file__display__back-link{
+    position: relative;
+    top: 1rem;
+    left: 1rem;
+}

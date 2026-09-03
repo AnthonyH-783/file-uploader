@@ -7,6 +7,7 @@ import prisma from "../db/prisma";
 import { randomUUID } from "node:crypto";
 import { Folder } from "../generated/prisma/client";
 import { URLSearchParams } from "node:url";
+import { getFileURL } from "../db/supabase";
 
 const handleUpload = upload.array("uploaded_file");
 
@@ -34,7 +35,7 @@ export const saveFile = async (req: Request, res: Response, next: NextFunction) 
         // Retrieving request info - files, category, user
         const files = (req.files ?? []) as Express.Multer.File[];
         const category: string = req.body.category;
-        console.log(category);
+
         if (!files || files.length === 0) {
             throw new AppError(400, "No files were uploaded", true);
         }
@@ -63,13 +64,12 @@ export const saveFile = async (req: Request, res: Response, next: NextFunction) 
 
        res.redirect("/upload");
     } catch (err) {
-    
         next(err);
     }
 };
 
 function prepareFilesForUpload(files: Express.Multer.File[], folderId:string, userId:string){
-    
+  
     return files.map((file) => {
         const id = randomUUID();
         return {
@@ -133,6 +133,40 @@ export const deleteFile = async(req:Request, res:Response, next:NextFunction) =>
         const query = new URLSearchParams({msg: `${name} deleted`});
         res.redirect(`/folders/${folderId}?${query}`);
        
+
+    }
+    catch(err){
+        next(err);
+
+    }
+}
+
+export const showFile = async (req:Request, res:Response, next:NextFunction) => {
+    try{
+        // Extracting request info
+        const {fileId} = req.params;
+        if(!fileId) throw new AppError(400, "File id was not provided");
+        const userId = res.locals.currentUser.id;
+        // Extracting file data
+        const file = await prisma.file.findUniqueOrThrow({
+            where: {ownerId: userId, id: fileId as string}
+        });
+        // Getting url to storage
+        const storageKey = file.storageKey;
+        const url = await getFileURL(storageKey);
+        // Extracting media category for cleaner view logic
+        const [mediaType, mediaSubtype] = file.mimeType.split("/");
+        const backLink = (file.folderId === null) ? "/folders" : `/folders/${file.folderId}`;
+        
+        
+        res.render("pages/file-view", {
+            file, // meta-data contains name, folder, mime type and more
+            url,
+            mediaType,
+            mediaSubtype,
+            backLink
+        });
+
 
     }
     catch(err){

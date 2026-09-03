@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { MulterError } from "multer";
 import { AppError } from "../errors/AppError";
+import { StorageError, StorageApiError, StorageUnknownError } from "@supabase/storage-js";
 
 type Mapped = { status: number; message: string; expose: boolean };
 
@@ -29,6 +30,9 @@ const mapError = (err: unknown): Mapped => {
       ? { status: 413, message: "File is too large", expose: true }
       : { status: 400, message: "Upload failed", expose: true };
   }
+  if(err instanceof StorageUnknownError){
+  
+  }
 
   return { status: 500, message: "Internal server error", expose: false };
 };
@@ -36,6 +40,7 @@ const mapError = (err: unknown): Mapped => {
 
 export const errorHandler = (err: unknown, req: Request, res: Response, next: NextFunction) => {
   const { status, message, expose } = mapError(err);
+ 
 
   const log = status >= 500 ? console.error : console.warn;
   log(`[${status}] ${req.method} ${req.originalUrl}`, {

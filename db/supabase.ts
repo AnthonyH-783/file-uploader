@@ -51,5 +51,14 @@ export async function deleteFilesFromStorage(storageKeys:string[]){
     }
 }
 
+export const getFileURL = async(storageKey:string) => {
+    const {data, error} = await supabase.storage.from(BUCKET as string)
+                            .createSignedUrl(storageKey, 3600);
+    if(error) throw error;
+    return data.signedUrl;
+    
+
+}
+
 
 

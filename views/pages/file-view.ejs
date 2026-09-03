@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File <%=file.name%></title>
+</head>
+<body>
+    <section class="file__display">
+        <a href="<%=backLink%>" class="file__display__back-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        </a>
+        <h2><%=file.name%></h2>
+        <div class="file__display__media-container">
+            <% if(mediaType === 'image'){%>
+                <img src="<%=url%>" alt="<%=file.name%>">
+            <%} else if(mediaType === 'video'){ %>
+                <video controls>
+                    <source src="<%=url%>" type="<%=file.mimeType%>">
+                    Your browser does not support the video tag. Click
+                    <a href="<%=url%>">this link</a> to download
+                </video>
+                <%} else if(mediaSubtype === 'pdf'){%>
+                    <object data="<%=url%>" type="<%=file.mimeType%>">
+                        <p> Your browser does not support embedded pdfs
+                            <a href="<%=url%>">Download the pdf</a> instead
+                        </p>
+                    </object>
+                <%} else if(mediaType === 'audio'){%>
+                    <audio controls>
+                        <source src="<%=url%>" type="<%=file.mimeType%>">
+                        Your browser does not support audio elements.
+                        <a href="<%=url%>">Click this link</a>
+                    </audio>
+                <%} else{%>
+                    <p>Here is <a href="<%=url%>">a link</a> to the requested file</p>
+                <% } %>
+
+        </div>
+
+
+    </section>
+    
+</body>
+</html>
