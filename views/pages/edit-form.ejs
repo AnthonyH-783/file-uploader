@@ -8,13 +8,16 @@
 <body>
     <form class="edit-form" action="/<%=docType%>s/<%=docId%>/edit" method="post">
         <h3>Edit <%=docType%></h3>
+        <% if(locals.formErrors.length !== 0){%>
+            <%-include("../components/error")%>
+        <% } %>
         <div class="edit-form__name">
             <label for="name"><%=docType%> name</label>
             <input name="name" type="text" value="<%=docName%>">
         </div>
         <div class="edit-form__location">
             <label for="location"><%=docType%> location</label>
-            <select name="location" id="location">
+            <select name="folderId" id="location">
                 <option value="" selected disabled><%=currentCategory?.name ?? "Root Folder"%></option>
                 <% for(const category of categories){%>
                 <option value="<%=category.id%>" <%=category.id === currentCategory.id ? 'selected' : ''%> >
@@ -23,8 +26,9 @@
                 <% } %>
             </select>
         </div>
+        <input type="text" name="originId" value="<%=currentCategory ? currentCategory.id : null%>" hidden>
         <button type="submit">Edit</button>
-        <a href="/folders">Cancel</a>
+        <a href="<%=backLink%>">Cancel</a>
     </form>
     
 </body>

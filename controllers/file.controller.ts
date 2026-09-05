@@ -8,6 +8,7 @@ import { randomUUID } from "node:crypto";
 import { Folder } from "../generated/prisma/client";
 import { URLSearchParams } from "node:url";
 import { getFileURL } from "../db/supabase";
+import { matchedData, validationResult} from "express-validator";
 
 const handleUpload = upload.array("uploaded_file");
 
@@ -172,5 +173,62 @@ export const showFile = async (req:Request, res:Response, next:NextFunction) => 
     catch(err){
         next(err);
 
+    }
+}
+
+export const getFileEditForm = async(req:Request, res:Response, next:NextFunction) => {
+    try{
+        const {fileId} = req.params;
+        if(!fileId) throw new AppError(400, "File id not provided");
+        const ownerId = res.locals.currentUser.id;
+        const file = await prisma.file.findUniqueOrThrow({
+            where: {ownerId, id: fileId as string}
+        });
+        const categories = await prisma.folder.findMany({
+            where: {ownerId}
+        });
+        const docType = "file";
+        console.log(Object.keys(res.locals.formData).length);
+        const docName = (Object.keys(res.locals.formData).length !== 0) ?
+         res.locals.formData.name : file.name;
+        const currentCategory = await prisma.folder.findUniqueOrThrow({
+            where: {ownerId, id: file.folderId as string}
+        });
+        const backLink = (file.folderId === null) ? "/folders" : `/folders/${file.folderId}`;
+        
+        res.render("pages/edit-form", {
+            docType,
+            currentCategory,
+            categories,
+            backLink,
+            docId: fileId,
+            docName
+        })
+
+    }
+    catch(err){
+        next(err);
+    }
+}
+
+export const updateFile = async(req:Request, res:Response, next:NextFunction) => {
+    try{
+        const ownerId = res.locals.currentUser.id;
+        const {fileId} = req.params;
+        const {folderId} = req.body;
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            req.session.formErrors = errors.array().map((err) => err.msg);
+            return req.session.save(() => res.redirect(`/files/${fileId}/edit`));
+        }
+         const {name} = matchedData(req);
+         await prisma.file.update({
+            where: {ownerId, id: fileId as string},
+            data: {name, folderId}
+         });   
+         res.redirect(`/folders/${folderId}`);
+    }
+    catch(err){
+        next(err);
     }
 }
