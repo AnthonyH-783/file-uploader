@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete <%=docType%></title>
+</head>
+<body>
+    <form style="display: flex; flex-direction:column;" action="/<%=docType%>s/<%=docId%>/delete" method="post" class="delete-form">
+        <h2>Do you want to delete the following <%=docType%> ?</h2>
+         <h3><%=docName%></h3>
+        <div>
+            <% if(mediaType === 'image'){ %>
+                <img src="<%=url%>" alt="<%=docName%>">
+            <% } else if(mediaType === 'video') { %>
+                <video controls>
+                    <source src="<%=url%>" type="<%=mimeType%>">
+                    Your browser does not support <%=mimeType%>.
+                    <a href="<%=url%>">Click here</a> to open in new window
+                </video>
+            <% } else if(mediaSubtype === 'pdf'){ %>
+                <object data="<%=url%>" type="<%=mimeType%>">
+                    <p>Your browser does not support inline pdfs.
+                         Use <a href="<%=url%>">This link</a></p>
+                </object>
+            <% } else if(mediaType === 'audio'){ %>
+                <audio controls>
+                    <source src="<%=url%>" type="<%=mimeType%>">
+                    <p>Your browser does not support audio elements
+                        Try using <a href="<%=url%>">this link</a>
+                    </p>
+                </audio>
+            <% } else{ %>
+                <p>Use <a href="<%=url%>">this link</a> to access the media element url</p>
+            <% } %>
+    
+           
+        </div>
+        <button type="submit">Delete</button>
+        <a class="cancel-link" href="<%=backLink%>">Cancel</a>
+    </form>
+    
+</body>
+</html>

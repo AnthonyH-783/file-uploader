@@ -7,6 +7,7 @@ const lengthErr = (MAX_NAME_LENGTH:number) => `Name can be at most ${MAX_NAME_LE
 export const validateFileUpdate = () : ValidationChain[] => {
     return [
         body("name").trim().notEmpty().withMessage(emptyErr)
-        .isLength({max: MAX_NAME_LENGTH}).withMessage(lengthErr(MAX_NAME_LENGTH))
+        .isLength({max: MAX_NAME_LENGTH}).withMessage(lengthErr(MAX_NAME_LENGTH)),
+        body("folderId").trim().notEmpty().withMessage("Parent Folder not provided")
     ]
 }

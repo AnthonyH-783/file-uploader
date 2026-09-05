@@ -13,5 +13,7 @@ fileRouter.post("/upload", fileController.multerErrHandling, fileController.save
 fileRouter.get("/:fileId", fileController.showFile);
 fileRouter.get("/:fileId/edit", fileController.getFileEditForm);
 fileRouter.post("/:fileId/edit", ...validateFileUpdate(), fileController.updateFile);
+fileRouter.get("/:fileId/delete", fileController.getFileDeleteForm);
+fileRouter.post("/:fileId/delete", fileController.deleteFile);
 
 export default fileRouter;

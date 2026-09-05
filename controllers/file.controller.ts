@@ -215,13 +215,12 @@ export const updateFile = async(req:Request, res:Response, next:NextFunction) =>
     try{
         const ownerId = res.locals.currentUser.id;
         const {fileId} = req.params;
-        const {folderId} = req.body;
         const errors = validationResult(req);
         if(!errors.isEmpty()){
             req.session.formErrors = errors.array().map((err) => err.msg);
             return req.session.save(() => res.redirect(`/files/${fileId}/edit`));
         }
-         const {name} = matchedData(req);
+         const {name, folderId} = matchedData(req);
          await prisma.file.update({
             where: {ownerId, id: fileId as string},
             data: {name, folderId}
@@ -230,5 +229,37 @@ export const updateFile = async(req:Request, res:Response, next:NextFunction) =>
     }
     catch(err){
         next(err);
+    }
+}
+
+export const getFileDeleteForm = async(req:Request, res:Response, next: NextFunction) => {
+    try{
+        const ownerId = res.locals.currentUser.id;
+        const {fileId} = req.params;
+        const file = await prisma.file.findUniqueOrThrow({
+            where: {ownerId, id: fileId as string}
+        });
+        // Getting url to storage
+        const storageKey = file.storageKey;
+        const url = await getFileURL(storageKey);
+        // Extracting media category for cleaner view logic
+        const [mediaType, mediaSubtype] = file.mimeType.split("/");
+        const mimeType = file.mimeType;
+        const backLink = (file.folderId) ? `/folders/${file.folderId}` : "/folders";
+        res.render("pages/delete-form", {
+            docType: "file",
+            docName: file.name,
+            docId: file.id,
+            backLink,
+            mediaType,
+            mediaSubtype,
+            url,
+            mimeType
+        });
+
+    }
+    catch(err){
+        next(err);
+
     }
 }
