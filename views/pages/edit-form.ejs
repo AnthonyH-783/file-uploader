@@ -17,16 +17,17 @@
         </div>
         <div class="edit-form__location">
             <label for="location"><%=docType%> location</label>
-            <select name="folderId" id="location">
-                <option value="" selected disabled><%=currentCategory?.name ?? "Root Folder"%></option>
+            <select name="targetDirId" id="location">
+                <option value="<%=currentCategory?.id%>" selected><%=currentCategory?.name ?? "Root Folder"%></option>
                 <% for(const category of categories){%>
-                <option value="<%=category.id%>" <%=category.id === currentCategory.id ? 'selected' : ''%> >
+                <option value="<%=category.id%>" <%=category.id === currentCategory?.id ? 'selected' : ''%> >
                     <%=category.name%>
                 </option>
                 <% } %>
             </select>
         </div>
         <input type="text" name="originId" value="<%=currentCategory ? currentCategory.id : null%>" hidden>
+        <input type="text" name="currentName" value="<%=docName%>">
         <button type="submit">Edit</button>
         <a href="<%=backLink%>">Cancel</a>
     </form>

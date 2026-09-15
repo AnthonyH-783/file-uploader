@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New folder</title>
+</head>
+<body>
+    <form class="folder-form" action="/folders/new" method="post">
+        <h3>Create new folder</h3>
+
+        <div class="folder-form__row">
+            <label for="name">Folder Name</label>
+            <input name="name" id="name" type="text">
+        </div>
+        <div class="folder-form__row">
+            <label id="parentId" for="parentId">Directory</label>
+            <select name="parentId" id="parentId">
+                <option value="0" selected>Root</option>
+                <%for(directory of directories){ %>
+                    <option value="<%=directory.id%>"><%=directory.name%></option>
+                <% } %>
+            </select>
+        </div>
+        <div class="folder-form_row">
+            <button type="submit">Create Folder</button>
+            <a href="/folders">Cancel</a>
+        </div>
+    </form>
+    
+</body>
+</html>

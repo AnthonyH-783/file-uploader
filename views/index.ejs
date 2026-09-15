@@ -11,7 +11,7 @@
     <% if(selected === 'upload'){ %>
             <%-include("components/upload-form", {categories})%>
     <% } else if(selected === 'folders') { %>
-            <%-include("components/folders-list", {folders}) %>
+            <%-include("components/folders-list", {folders, backLink}) %>
     <% } else { %>
         <%-include("pages/error", {status:401, message: 'Page not found'})%>
     <% } %>

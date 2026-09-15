@@ -7,6 +7,7 @@ import { error } from "node:console";
 import { deleteFilesFromStorage } from "../db/supabase";
 import { URLSearchParams } from "node:url";
 import { format } from "date-fns";
+import { matchedData, validationResult } from "express-validator";
 
 export const createFolder = async (req:Request, res:Response, next:NextFunction) => {
     try{
@@ -26,9 +27,9 @@ export const createFolder = async (req:Request, res:Response, next:NextFunction)
             }
         }
         // Creating folder and re-directing to its view
+        console.log(parentId);
         const folder = await prisma.folder.create({data: {name, ownerId, parentId}});
-        return res.redirect(`folders/${folder.id}`);
-
+        return res.redirect(`/folders/${folder.id}`);
     }
     catch(err){
         if(err instanceof Prisma.PrismaClientKnownRequestError && err.code == "P2002"){
@@ -76,10 +77,14 @@ export const viewFolder = async(req:Request, res:Response, next:NextFunction) =>
             })
         ]);
         const formatedDates = formatLastUpdated([...folders, ...files]);
+        const backLink = (folder?.parentId) ? `/folders/${folder.parentId}`
+                                            : '/folders';
+        let isRoot = false;
+        if(req.originalUrl === req.baseUrl) isRoot = true;
 
         res.render("index", {
             selected: "folders", folder, folders, files, page,
-            formatedDates, error: req.query.error ?? null
+            formatedDates, error: req.query.error ?? null, backLink, isRoot
         });
         
     }
@@ -95,19 +100,19 @@ export const renameFolder = async (req:Request, res:Response, next:NextFunction)
     const ownerId = res.locals.currentUser.id;
     // Getting request information
     const {folderId} = req.params;
-    const {newName} = req.body;
+    const {name, currentName} = req.body;
+    if(name === currentName) return next();
     // Finding and validating folder
     if(!folderId || typeof folderId !== "string" || !ownerId) throw new AppError(403, "Target folder could not be identified");
     await prisma.folder.update({
         where: {id: folderId, ownerId},
-        data: {name: newName}
+        data: {name}
         
     }); // throws P2025 prisma error when not found
     res.redirect(`/folders/${folderId}?msg=${encodeURIComponent("Folder Successfully Renamed")}`);
     }
     catch(err){
         next(err);
-
     }
 }
 
@@ -116,15 +121,13 @@ export const moveFolder = async (req:Request, res:Response, next:NextFunction) =
         // Identifying owner
         const ownerId = res.locals.currentUser.id;
         // Extracting request info
-        const {folderId} = req.params;
-        const {targetDirId} = req.body;
-        if((!folderId || typeof folderId !== "string") ||
-           (!targetDirId || typeof targetDirId !== "string")){
-            throw new AppError(403,"Some folder(s) could not be identified");
+        const folderId = req.params.folderId as string;
+        const {targetDirId, originId} = req.body;
+        // Skipping if new directory not selected
+        if(originId === targetDirId){
+            return next();
         }
-        if(folderId === targetDirId){
-            throw new AppError(400, "Cannot move folder into itelsef");
-        }
+
         // Finding and validating folders
         const [folder, targetDir] = await Promise.all([
             prisma.folder.findUniqueOrThrow({where: {id: folderId, ownerId}}),
@@ -138,7 +141,7 @@ export const moveFolder = async (req:Request, res:Response, next:NextFunction) =
         // Changing parent id to point to the new directory
         await prisma.folder.update({
                 where: {id: folderId, ownerId},
-                data: {parentId: targetDirId}
+                data: {parentId: targetDirId, updatedAt: new Date()}
             })
         const queryString = new URLSearchParams({
             msg: `${folder.name} moved to ${targetDir.name}`
@@ -270,12 +273,87 @@ export const getFolderEditForm = async(req:Request, res:Response) => {
         where: {ownerId: userId, id: {notIn: [folderId, ...descendants]}},
         select: {name: true, id: true}
     });
+    const backLink = (folder.parent && folder.parent.id !== null) ?
+                        `/folders/${folder.parent.id}` : '/folders';
     
     res.render("pages/edit-form", {
         docId: folderId,
         docType: "folder",
         docName: folder.name,
         categories,
-        currentCategory
+        currentCategory,
+        backLink,
     })
+}
+
+export const getFolderCreationForm = async(req:Request, res:Response, next:NextFunction) => {
+    try{
+        const ownerId = res.locals.currentUser.id;
+
+        const directories = await prisma.folder.findMany({
+            where: {ownerId}
+        });
+        res.render("pages/folder-form", {
+            directories
+        });
+
+    }
+    catch(err){
+        return next(err);
+    }
+}
+
+export const updateFolder = async(req:Request, res:Response, next:NextFunction) => {
+    try{
+        // Request extraction
+        const ownerId = res.locals.currentUser.id;
+        const folderId = req.params.folderId as string;
+        // Error handling
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            console.log("error found");
+            req.session.formData = {folderName: req.body.name,
+                                    directoryId: req.body.targetFolderId};
+            req.session.formErrors = errors.array().map((err) => err.msg);
+            return req.session.save(() => res.redirect(`/folders/${folderId}/edit`));
+        }
+        // Database update
+        const {name, targetFolderId} = matchedData(req);
+        await prisma.folder.update({
+            where: {ownerId, id: folderId},
+            data: {name, parentId: targetFolderId}
+        });
+        // Redirect to parent folder
+        res.redirect(`/folders/${targetFolderId}`);
+
+    }
+    catch(err){
+        next(err);
+    }
+}
+
+export const getFolderDeletionForm = async(req:Request, res:Response, next: NextFunction) => {
+    try{
+        // Extracting request
+        const ownerId = res.locals.currentUser.id;
+        const folderId = req.params.folderId as string;
+        // Get folder info
+        const folder = await prisma.folder.findUniqueOrThrow({
+            where: {ownerId, id: folderId},
+        });
+        const backLink = (folder.parentId !== null) ? `/folders/${folder.parentId}` :
+                                                      '/folders';
+        res.render("pages/delete-form", {
+            docType: "folder",
+            docName: folder.name,
+            mediaType: null,
+            mediaSubtype: null,
+            mimeType: null,
+            docId: folderId,
+            backLink
+        })
+    }
+    catch(err){
+        next(err);
+    }
 }
