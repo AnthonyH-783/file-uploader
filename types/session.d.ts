@@ -8,6 +8,8 @@ declare module "express-session" {
       firstName?: string;
       lastName?: string;
       email?: string;
+      folderName?: string,
+      directoryId?: string
     };
   }
 }
