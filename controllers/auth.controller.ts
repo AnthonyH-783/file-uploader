@@ -6,13 +6,7 @@ import { AppError } from "../errors/AppError";
 import { seedIfNeeded } from "../db/seed";
 import { validationResult, matchedData } from "express-validator";
 import { PrismaClientKnownRequestError } from "../generated/prisma/internal/prismaNamespace";
-/** 
-export const login = passport.authenticate("local", {
-    successRedirect: "/main",
-    failureRedirect: "/login",
-    failureMessage: true
-});
-*/
+
 export const login = async(req: Request, res: Response, next: NextFunction) => {
     passport.authenticate("local", (err: unknown, user: Express.User) => {
         if(err) return next(err);
@@ -54,7 +48,7 @@ export const signup = async (req:Request, res:Response, next:NextFunction) => {
         console.log("Finsihed validation");
         const {firstName, lastName, email, password} = matchedData(req);
         const passwordHash = await bcrypt.hash(password, 10);
-        await prisma.user.create({
+        const user = await prisma.user.create({
             data: {
                 firstName,
                 lastName,
@@ -62,7 +56,7 @@ export const signup = async (req:Request, res:Response, next:NextFunction) => {
                 passwordHash
             }
         });
-        console.log("About to redirect");
+        await seedIfNeeded(user.id);
         return res.redirect("/auth/login");
     }
     catch(err){

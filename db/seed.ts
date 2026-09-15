@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+
 import prisma from "./prisma";
 import {Request, Response, NextFunction } from "express";
 
@@ -11,11 +11,8 @@ export async function seedIfNeeded(userId:string){
     if(claimed.count === 0){
         return false;
     }
-    await prisma.$transaction([ // using transaction for potentially multiple steps
-        prisma.folder.create({
-            data: {name: "uncategorized", ownerId: userId}
-        })
-    ]);
-
+    await prisma.folder.create({
+        data: {ownerId: userId, name: "Root Folder"}
+    });
     return true;
 }
