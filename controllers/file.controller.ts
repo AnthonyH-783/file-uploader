@@ -17,9 +17,10 @@ export const multerErrHandling = (req:Request, res:Response , next:NextFunction)
     handleUpload(req, res, (err:unknown) => {
  
         if(err instanceof multer.MulterError){
-            if(err.code.match('415')){
-                return res.redirect(`/main?error=${err.message}`);
-            }
+            if(err.code === 'LIMIT_FILE_SIZE'){
+                req.session.formErrors = ['Uploads cannot exceed 10 MB'];
+                return req.session.save(() => res.redirect("/upload"));
+            };
             const {message} = err;
             return next(new AppError(400, message, true));
         }

@@ -3,6 +3,9 @@
     <h1 class="upload-form__title">Upload a file</h1>
 
     <div class="upload-form__group">
+      <% if(formErrors.length !== 0){ %>
+        <%-include("error")%>
+      <% } %>
       <label class="upload-form__label" for="category">Category</label>
       <select class="upload-form__select" id="category" name="category" required>
         <option value="" disabled selected>Choose a category…</option>
@@ -14,7 +17,7 @@
 
     <div class="upload-form__group">
       <label class="upload-form__label" for="file">File</label>
-      <input class="upload-form__file-input" type="file" id="file" name="uploaded_file" required />
+      <input class="upload-form__file-input" type="file" id="file" name="uploaded_file" required multiple/>
       <label class="upload-form__dropzone" for="file" id="dropzone">
         <span class="upload-form__dropzone-name" id="fileName">Choose a file or drag it here</span>
         <span class="upload-form__dropzone-hint">Max 10&nbsp;MB</span>

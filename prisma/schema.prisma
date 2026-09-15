@@ -45,7 +45,7 @@ model File {
 model Folder {
   id       String   @id @default(uuid())
   name     String
-  parentId String?
+  parentId String? 
   parent   Folder?  @relation("Tree", fields: [parentId], references: [id], onDelete: Cascade)
   children Folder[] @relation("Tree")
   files    File[]
@@ -54,7 +54,7 @@ model Folder {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
 
-  @@unique([ownerId, parentId, name])
+  @@unique([id, ownerId])
   @@index([ownerId, parentId])
 }
 
