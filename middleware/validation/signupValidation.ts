@@ -1,5 +1,5 @@
 
-import { body, ValidationChain } from "express-validator";
+import { body, ValidationChain} from "express-validator";
 import prisma from "../../db/prisma";
 
 const MAX_NAME_LENGTH = 25;
@@ -50,7 +50,6 @@ export const validateSignup = (): ValidationChain[] => [
 ];
 
 async function checkEmailNotInUse(value: string) {
-
   const user = await prisma.user.findUnique({ where: { email: value } });
   if (user) throw new Error("Email already in use");
 }
