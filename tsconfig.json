@@ -3,8 +3,12 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "target": "ES2023",
+    "lib": ["ES2023"],          
+    "types": ["node"],
     "strict": true,
     "esModuleInterop": true,
+    "noEmit": true,             
     "ignoreDeprecations": "6.0"
-  }
+  },
+  "exclude": ["src/client", "public", "node_modules"]
 }

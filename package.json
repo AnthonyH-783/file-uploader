@@ -5,7 +5,9 @@
   "description": "Google Drive-like service where uploaded files are stored on the cloud",
   "main": "index.js",
   "scripts": {
-    "dev": "npx tsx --watch app.ts"
+    "dev": "concurrently -n server,client \"tsx --watch app.ts\" \"tsc -p client --watch\"",
+    "build:client": "tsc -p client",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.client.json --noEmit"
   },
   "keywords": [],
   "author": "",

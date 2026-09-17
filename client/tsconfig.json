@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": [],
+    "noEmit": false,
+    "rootDir": ".",
+    "outDir": "../public/scripts",
+    "sourceMap": true,
+    "inlineSources": true
+  },
+  "include": ["."],
+  "exclude": []
+}
