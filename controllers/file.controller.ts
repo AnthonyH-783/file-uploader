@@ -12,7 +12,7 @@ import { matchedData, validationResult} from "express-validator";
 
 const handleUpload = upload.array("uploaded_file");
 
-export const multerErrHandling = (req:Request, res:Response , next:NextFunction) => {
+export const multerErrHandling = (req:Request, res:Response , next: NextFunction) => {
     // Defining error handling for failing to attach files to req
     handleUpload(req, res, (err:unknown) => {
  
