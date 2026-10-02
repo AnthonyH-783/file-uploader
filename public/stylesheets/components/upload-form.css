@@ -1,3 +1,6 @@
+[hidden] {
+  display: none !important;
+}
 .upload-form {
 
     min-width: 40vw;
@@ -73,6 +76,10 @@
 .upload-form__button {
     width: 100%;
     padding: 0.8rem;
+    display: flex;
+    gap: 0.3rem;
+    justify-content: center;
+    align-items: center;
     font-size: 0.95rem;
     font-weight: 600;
     color: var(--surface-2);
@@ -85,3 +92,67 @@
 .upload-form__button:hover { background: var(--color-accent-hover); }
 .upload-form__select:focus,
 .upload-form__button:focus { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+
+.file-list{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 0;
+}
+.file-list__header{
+    display: flex;
+    justify-content: space-between;
+}
+.file-list__header__right{
+    display: flex;
+    gap: var(--space-4);
+}
+.num-files{
+    font-weight: bold;
+}
+.file-name{
+    display: flex;
+    flex-direction: column;
+}
+.file-size{
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+.total-size{
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.delete-upload{
+    color: var(--text-secondary);
+    cursor: pointer;
+
+}
+.name-type{
+    display:flex;
+    gap: 1rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.upload-form__file-upload-row{
+    display: grid;
+    grid-template-columns: 5fr 3fr 0.2fr;
+    align-items: center;
+    gap: 1.2rem;
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-default);
+
+}
+.clear-all{
+    all: unset;
+    color: var(--color-accent);
+    font-weight: 400;
+    cursor: pointer;
+}
+.file-list__error{
+    color: var(--color-error-text);
+}

@@ -10,7 +10,7 @@
 <body>
     <%-include("components/navbar", {selected})%>
     <% if(selected === 'upload'){ %>
-            <%-include("components/upload-form", {categories})%>
+            <%-include("components/upload-form", {categories, MAX_SIZE})%>
     <% } else if(selected === 'folders') { %>
             <%-include("components/folders-list", {folders, backLink}) %>
     <% } else { %>

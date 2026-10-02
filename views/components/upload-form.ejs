@@ -20,12 +20,31 @@
       <input class="upload-form__file-input" type="file" id="file" name="uploaded_file" required multiple/>
       <label class="upload-form__dropzone" for="file" id="dropzone">
         <span class="upload-form__dropzone-name" id="fileName">Choose a file or drag it here</span>
-        <span class="upload-form__dropzone-hint">Max 10&nbsp;MB</span>
+        <span class="upload-form__dropzone-hint">Max <%=MAX_SIZE%></span>
       </label>
     </div>
     <div class="file-list">
-      
+      <div class="file-list__header">
+        <div class="file-list__header__left">
+          <span class="num-files"></span>
+        </div>
+        
+        <div class="file-list__header__right" hidden>
+            <span class="total-size"></span>
+            <button class="clear-all">Clear All</button>
+        </div>
+      </div>
+      <div class="file-list__error" hidden>
+        Warning: Your current file selection exceeds <%=MAX_SIZE%>
+      </div>
+      <div class="file-list__body">
+
+      </div>
     </div>
 
-    <button class="upload-form__button" type="submit">Upload</button>
+    <button class="upload-form__button" type="submit">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-upload preview-icon"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>
+      <span>Upload</span>
+      <span class="submit-count"></span>
+    </button>
   </form>

@@ -8,6 +8,7 @@ export const getIndex = async (req: Request, res: Response, next: NextFunction) 
         where: {ownerId},
         
     });
-    const categories = folders.map((folder) => folder.name)
-    res.render("index", {selected: tab, categories, folders});
+    const categories = folders.map((folder) => folder.name);
+    const MAX_SIZE = "10 MB";
+    res.render("index", {selected: tab, categories, folders, MAX_SIZE});
 }

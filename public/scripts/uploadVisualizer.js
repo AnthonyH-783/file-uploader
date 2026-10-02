@@ -2,11 +2,14 @@
 (function uploadScreenController() {
     const input = document.getElementById("file");
     const uploads = document.querySelector(".file-list");
+    const MAX_SIZE = 10 * 1024 * 1024;
+    let totalSize = 0;
     if (!(input instanceof HTMLInputElement)
         || !(uploads instanceof HTMLDivElement))
         return;
     input.addEventListener("change", handleInputChange);
     uploads.addEventListener("click", removeUpload);
+    uploads.addEventListener("click", clearAll);
     function handleInputChange(evt) {
         // Selecting input elements
         const input = evt.currentTarget;
@@ -18,70 +21,120 @@
         if (!list || !list.classList.contains("file-list")) {
             list = document.createElement("div");
             list.classList.add("form-upload__group", "file-list");
+            list.innerHTML = '<div class="file-list__header" hidden> <div class="file-list__header__left"> <span class="num-files"></span> </div> <div class="file-list__header__right" <span class="total-size"></span> <button class="clear-all"></button> </div>       <div class="file-list__body"> </div> </div>';
             uploadBox.after(list);
         }
-        list.replaceChildren(...Array.from(input.files, createFileView));
-        console.log(input.files);
-        console.log(list);
+        updateTotalSize();
+        render(list);
+    }
+    function render(list) {
+        // Selecting needed HTML Elements
+        const header = list.querySelector(".file-list__header");
+        const rightHeader = list.querySelector(".file-list__header__right");
+        const body = list.querySelector(".file-list__body");
+        const numFiles = list.querySelector(".num-files");
+        const totalSizeDiv = list.querySelector(".total-size");
+        const errorMsg = document.querySelector(".file-list__error");
+        const submitBtnCount = document.querySelector(".submit-count");
+        if (!header || !body || !numFiles || !totalSizeDiv || !submitBtnCount) {
+            console.error("File list markup is incomplete");
+            return;
+        }
+        // Applying changes from current files collection
+        const files = input.files ? Array.from(input.files) : [];
+        body.replaceChildren(...files.map(createFileView));
+        numFiles.textContent = String(files.length) + " file(s) selected";
+        totalSizeDiv.textContent = getTotalFileSizeMB(files);
+        header.hidden = files.length === 0;
+        console.log(totalSize, MAX_SIZE);
+        errorMsg.hidden = totalSize < MAX_SIZE;
+        rightHeader.hidden = (!input.files || input.files.length === 0);
+        submitBtnCount.textContent = (input.files?.length) ? String(input.files.length) + " files" : "";
+    }
+    function updateTotalSize() {
+        totalSize = 0;
+        if (!input.files) {
+            return;
+        }
+        for (const file of input.files) {
+            totalSize += file.size;
+        }
     }
     function removeUpload(evt) {
-        // Targetting the delete button
-        if (!(evt.target instanceof SVGSVGElement))
-            return;
+        // Selecting html
         const deleteBtn = evt.target.closest(".upload-remover");
-        if (!deleteBtn)
+        const row = deleteBtn?.closest(".upload-form__file-upload-row");
+        const list = deleteBtn?.closest(".file-list");
+        if (!row || !list || !input.files)
             return;
-        if (!deleteBtn.classList.contains("upload-remover") || !(input.files))
-            return;
-        // Getting file name or id
-        const row = deleteBtn.closest(".file-upload-row");
-        const fileIndex = (row.dataset.index);
-        if (!fileIndex)
-            return;
-        // Removing file from inputs and list
-        removeFile(input, fileIndex);
-    }
-    function removeFile(input, fileIndex) {
+        // Mutating input files and rendering
+        const index = Number(row.dataset.index);
         const dt = new DataTransfer();
-        if (!input.files)
-            return false;
-        for (const idx in input.files) {
-            if (idx !== fileIndex && input.files[idx] instanceof File) {
-                dt.items.add(input.files[idx]);
-            }
-            else {
-                uploads?.querySelector(`div[data-index='${fileIndex}']`)?.remove();
-            }
-        }
+        Array.from(input.files).forEach((file, i) => {
+            if (i !== index)
+                dt.items.add(file);
+        });
         input.files = dt.files;
-        return true;
+        updateTotalSize();
+        render(list);
+    }
+    function clearAll(evt) {
+        // Selecting html
+        const button = evt.target;
+        if (!(button instanceof HTMLButtonElement))
+            return;
+        const list = button.closest(".file-list");
+        if (!list || !input.files)
+            return;
+        // Clearing
+        input.value = '';
+        updateTotalSize();
+        render(list);
+    }
+    function formatFileType(mediaType, mediaSubtype) {
+        if (mediaType === 'application')
+            return mediaSubtype.toUpperCase();
+        return mediaType;
     }
     function createFileView(file, index) {
         const ICONS = {
-            image: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-image"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><circle cx="10" cy="12" r="2"/><path d="m20 17-1.296-1.296a2.41 2.41 0 0 0-3.408 0L9 22"/></svg>',
-            video: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-video-camera"><path d="M4 12V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="m10 17.843 3.033-1.755a.64.64 0 0 1 .967.56v4.704a.65.65 0 0 1-.967.56L10 20.157"/><rect width="7" height="6" x="3" y="16" rx="1"/></svg>',
-            pdf: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>',
-            audio: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-headphone"><path d="M4 6.835V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2h-.343"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M2 19a2 2 0 0 1 4 0v1a2 2 0 0 1-4 0v-4a6 6 0 0 1 12 0v4a2 2 0 0 1-4 0v-1a2 2 0 0 1 4 0"/></svg>',
-            delete: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-x"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>',
+            image: '<img class="icon-img" src="/images/img.png">',
+            video: '<img class="icon-img" src="/images/video.png">',
+            pdf: '<img class="icon-img" src="/images/pdf.png">',
+            audio: '<img class="icon-img" src="/images/audio.png">',
+            delete: '<svg class="delete-upload" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x preview-icon"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
             miscellanious: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-question-mark"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M12 17h.01"/><path d="M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3"/></svg>'
         };
         // Defining row
         const row = document.createElement("div");
-        row.classList.add("file-upload-row");
+        row.classList.add("upload-form__file-upload-row");
         row.dataset.index = String(index);
         // Defining columns
         const [mediaType, mediaSubtype] = file.type.split("/");
-        const [name, fileType, icon] = [document.createElement("div"), document.createElement("div"), document.createElement("div")];
-        name.classList.add("file-name");
+        const [nameContainer, nameType, fileType, icon] = [document.createElement("div"), document.createElement("div"), document.createElement("div"), document.createElement("div")];
+        nameContainer.classList.add("file-name");
+        const name = document.createElement("div");
+        const fileSize = document.createElement("div");
+        fileSize.classList.add("file-size");
         name.textContent = file.name;
-        fileType.textContent = file.type;
+        fileSize.textContent = getTotalFileSizeMB([file]);
+        nameContainer.appendChild(name);
+        nameContainer.appendChild(fileSize);
+        fileType.textContent = formatFileType(mediaType, mediaSubtype);
         icon.innerHTML = ICONS[mediaType] ?? ICONS[mediaSubtype] ?? ICONS['miscellaneous'];
+        nameType.append(icon, nameContainer);
+        nameType.classList.add("name-type");
         const deleteSvg = document.createElement("div");
         deleteSvg.classList.add("upload-remover");
         deleteSvg.innerHTML = ICONS.delete;
-        row.append(icon, name, fileType, deleteSvg);
+        row.append(nameType, fileType, deleteSvg);
         return row;
     }
     ;
+    function getTotalFileSizeMB(files) {
+        const totalSizeBytes = files.reduce((acc, file) => acc + file.size, 0);
+        const sizeMB = (totalSizeBytes / (1024 * 1024)).toFixed(2);
+        return sizeMB + " MB";
+    }
 })();
 //# sourceMappingURL=uploadVisualizer.js.map
