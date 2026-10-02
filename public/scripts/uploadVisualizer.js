@@ -92,9 +92,30 @@
         render(list);
     }
     function formatFileType(mediaType, mediaSubtype) {
+        console.log(mediaType, mediaSubtype);
         if (mediaType === 'application')
-            return mediaSubtype.toUpperCase();
+            return formatApplicationSubtype(mediaSubtype);
         return mediaType;
+    }
+    function formatApplicationSubtype(mediaSubtype) {
+        switch (mediaSubtype) {
+            case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                return "spreadsheet";
+            case "vnd.ms-excel":
+                return "spreadsheet";
+            case "PDF":
+                return "pdf";
+            case "vnd.openxmlformats-officedocument.wordprocessingml.document":
+                return "word";
+            case "msword":
+                return "word";
+            case "vnd.openxmlformats-officedocument.presentationml.presentation":
+                return "powerpoint";
+            case "vnd.ms-powerpoint":
+                return "powerpoint";
+            default:
+                return "Unknown file";
+        }
     }
     function createFileView(file, index) {
         const ICONS = {
@@ -102,6 +123,9 @@
             video: '<img class="icon-img" src="/images/video.png">',
             pdf: '<img class="icon-img" src="/images/pdf.png">',
             audio: '<img class="icon-img" src="/images/audio.png">',
+            spreadsheet: '<img class="icon-img" src="/images/sheet.png">',
+            word: '<img class="icon-img" src="/images/word.png">',
+            powerpoint: '<img class="icon-img" src="/images/present.png">',
             delete: '<svg class="delete-upload" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x preview-icon"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
             miscellanious: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-question-mark"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M12 17h.01"/><path d="M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3"/></svg>'
         };
@@ -121,7 +145,7 @@
         nameContainer.appendChild(name);
         nameContainer.appendChild(fileSize);
         fileType.textContent = formatFileType(mediaType, mediaSubtype);
-        icon.innerHTML = ICONS[mediaType] ?? ICONS[mediaSubtype] ?? ICONS['miscellaneous'];
+        icon.innerHTML = ICONS[formatFileType(mediaType, mediaSubtype)];
         nameType.append(icon, nameContainer);
         nameType.classList.add("name-type");
         const deleteSvg = document.createElement("div");
