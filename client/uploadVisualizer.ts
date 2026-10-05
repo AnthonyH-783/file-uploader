@@ -3,15 +3,24 @@
 (function uploadScreenController(){
     const input = document.getElementById("file") as HTMLInputElement;
     const uploads = document.querySelector(".file-list");
+    const dropZone = document.querySelector(".upload-form__dropzone");
     const MAX_SIZE = 10 * 1024 * 1024;
     let totalSize = 0;
     if(!(input instanceof HTMLInputElement)
-    || !(uploads instanceof HTMLDivElement)) return;
+    || !(uploads instanceof HTMLDivElement)
+    || !(dropZone instanceof HTMLLabelElement)) return;
    
 
     input.addEventListener("change", handleInputChange);
     uploads.addEventListener("click", removeUpload);
     uploads.addEventListener("click", clearAll);
+    dropZone.addEventListener("drop", handleDropZone);
+    dropZone.addEventListener("dragover", handleDropZoneDragover);
+
+    // Preventing default drop behavior for files on window object
+    window.addEventListener("drop", handleWindowDrop);
+    window.addEventListener("dragover", handleWindowDragover);
+
     
 
 
@@ -31,7 +40,50 @@ function handleInputChange(evt: Event){
     updateTotalSize();
     render(list);
     
+}
+function handleDropZone(evt: DragEvent){
+    console.log('handleDropZone fired');
+    if(!evt.dataTransfer) return;
+    // Selecting dropped files
+    const files = [...evt.dataTransfer.items].filter(
+        (item) => item.kind === "file").map(
+            (item) => item.getAsFile()).filter(
+                (file): file is File => file !== null);
+    if(files.length === 0) return;
+    evt.preventDefault();
+    
+    const dt = new DataTransfer();
+    files.forEach((file) => dt.items.add(file));
+    input.files = dt.files;
 
+    input.dispatchEvent(new Event("change", {bubbles: true}));
+}
+
+function handleWindowDrop(evt: DragEvent){
+    if(!evt.dataTransfer) return;
+    if ([...evt.dataTransfer.items].some((item) => item.kind === "file")) {
+        evt.preventDefault();
+    }
+}
+
+function handleWindowDragover(evt: DragEvent){
+    if(!evt.dataTransfer) return;
+    const fileItems = [...evt.dataTransfer.items].filter(
+        (item) => item.kind === 'file'
+    );
+    if(fileItems.length > 0){
+        evt.preventDefault();
+        if(!(evt.target instanceof HTMLElement) || !dropZone?.contains(evt.target)){
+            evt.dataTransfer.dropEffect = "none";
+        }
+    }
+}
+function handleDropZoneDragover(evt: DragEvent){
+    if(!evt.dataTransfer) return;
+    if ([...evt.dataTransfer.items].some((i) => i.kind === "file")) {
+        evt.preventDefault();
+        evt.dataTransfer.dropEffect = "copy";
+    }
 }
 
 function render(list:Element){
@@ -111,8 +163,10 @@ function formatApplicationSubtype(mediaSubtype: string){
             return "spreadsheet";
         case "vnd.ms-excel":
             return "spreadsheet";
-        case "PDF":
+        case "pdf":
             return "pdf";
+        case "x-zip-compressed":
+            return "zip";
         case "vnd.openxmlformats-officedocument.wordprocessingml.document":
             return "word";
         case "msword":
@@ -122,7 +176,7 @@ function formatApplicationSubtype(mediaSubtype: string){
         case "vnd.ms-powerpoint":
             return "powerpoint";
         default:
-            return "Unknown file";
+            return "unknown file";
     }
     
 }
@@ -136,6 +190,7 @@ function createFileView(file: File, index: number) : HTMLDivElement {
         spreadsheet:'<img class="icon-img" src="/images/sheet.png">',
         word:'<img class="icon-img" src="/images/word.png">',
         powerpoint: '<img class="icon-img" src="/images/present.png">',
+        zip: '<img class="icon-img" src="/images/zip.png">',
         delete: '<svg class="delete-upload" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x preview-icon"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
         miscellanious: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-question-mark"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M12 17h.01"/><path d="M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3"/></svg>'
     }
