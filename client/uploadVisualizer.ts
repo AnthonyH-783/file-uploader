@@ -4,6 +4,7 @@
     const input = document.getElementById("file") as HTMLInputElement;
     const uploads = document.querySelector(".file-list");
     const dropZone = document.querySelector(".upload-form__dropzone");
+    let fileList = new DataTransfer();
     const MAX_SIZE = 10 * 1024 * 1024;
     let totalSize = 0;
     if(!(input instanceof HTMLInputElement)
@@ -37,25 +38,36 @@ function handleInputChange(evt: Event){
         list.innerHTML = '<div class="file-list__header" hidden> <div class="file-list__header__left"> <span class="num-files"></span> </div> <div class="file-list__header__right" <span class="total-size"></span> <button class="clear-all"></button> </div>       <div class="file-list__body"> </div> </div>';
         uploadBox.after(list);
     }
+    updateFileList(input);
     updateTotalSize();
     render(list);
     
 }
+function updateFileList(input: HTMLInputElement){
+    if(!input.files) return;
+    for(const file of input.files){
+        if(!(Array.from(fileList.files).includes(file))){
+            fileList.items.add(file);
+        }
+    }
+    input.files = fileList.files;
+
+}
 function handleDropZone(evt: DragEvent){
-    console.log('handleDropZone fired');
     if(!evt.dataTransfer) return;
-    // Selecting dropped files
+    // Selecting files dragged into browser
     const files = [...evt.dataTransfer.items].filter(
         (item) => item.kind === "file").map(
             (item) => item.getAsFile()).filter(
                 (file): file is File => file !== null);
     if(files.length === 0) return;
+    // Prevent default file opening in browser
     evt.preventDefault();
-    
+    // Transfer dragged file into the input html element
     const dt = new DataTransfer();
     files.forEach((file) => dt.items.add(file));
     input.files = dt.files;
-
+    // Dispatch input change event to trigger rendering
     input.dispatchEvent(new Event("change", {bubbles: true}));
 }
 
@@ -131,11 +143,8 @@ function removeUpload(evt: MouseEvent){
 
     // Mutating input files and rendering
     const index = Number(row.dataset.index);
-    const dt = new DataTransfer();
-    Array.from(input.files).forEach((file, i) => {
-        if(i !== index) dt.items.add(file);
-    });
-    input.files = dt.files;
+    fileList.items.remove(index);
+    input.files = fileList.files;
     updateTotalSize();
     render(list);
 }
@@ -148,6 +157,7 @@ function clearAll(evt: MouseEvent){
 
     // Clearing
     input.value = '';
+    fileList.items.clear();
     updateTotalSize();
     render(list);
 }
