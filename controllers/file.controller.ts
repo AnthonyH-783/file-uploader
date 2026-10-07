@@ -10,6 +10,8 @@ import { URLSearchParams } from "node:url";
 import { getFileURL } from "../db/supabase";
 import { matchedData, validationResult} from "express-validator";
 
+const ALLOWED_FILE_TYPES = ['image', 'video', 'application', 'audio'];
+
 const handleUpload = upload.array("uploaded_file");
 
 export const multerErrHandling = (req:Request, res:Response , next: NextFunction) => {
@@ -21,6 +23,10 @@ export const multerErrHandling = (req:Request, res:Response , next: NextFunction
                 req.session.formErrors = ['Uploads cannot exceed 10 MB'];
                 return req.session.save(() => res.redirect("/upload"));
             };
+            if(err.code === 'LIMIT_UNEXPECTED_FILE'){
+                req.session.formErrors = [err.message];
+                return req.session.save(() => res.redirect("/upload"));
+            }
             const {message} = err;
             return next(new AppError(400, message, true));
         }

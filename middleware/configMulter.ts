@@ -25,11 +25,13 @@ const limits: multer.Options["limits"]= {
 // 3) File Filter
 
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-    const allowedTypes = ["png", "jpeg", "jpg", "gif", "pdf", "webp"];
+    const allowedTypes = ['image', 'application', 'video', 'audio'];
 
-    const subtype = file.mimetype.split("/")[1];
-    if(!subtype && !allowedTypes.includes(subtype)){
-        return cb(null, false);
+    const fileType = file.mimetype.split("/")[0];
+    if(!fileType || !allowedTypes.includes(fileType)){
+        const err = new multer.MulterError('LIMIT_UNEXPECTED_FILE');
+        err.message = `Invalid file type: ${file.mimetype}. Accepted: image/*, application/*, video/*, audio/*`;
+        return cb(err);
     }
     return cb(null, true);
 }
