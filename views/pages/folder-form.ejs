@@ -4,29 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New folder</title>
+    <link rel="stylesheet" href="/stylesheets/main.css">
+    <link rel="stylesheet" href="/stylesheets/pages/folder-form.css">
 </head>
-<body>
+<body class="page-center">
     <form class="folder-form" action="/folders/new" method="post">
-        <h3>Create new folder</h3>
+        <header class="folder-form__header">
+            <div class="folder-form__header__icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+            </div>
+            <div class="folder-form__header__title">
+                <h1>Create New Folder</h1>
+                <p>Organize your files by creating a new folder.</p>
+            </div>
+        </header>
 
-        <div class="folder-form__row">
-            <label for="name">Folder Name</label>
-            <input name="name" id="name" type="text">
+        <div class="folder-form__body">
+            <div class="folder-form__row">
+                <label class="folder-form__label" for="name">
+                    Folder Name<span class="folder-form__required" aria-hidden="true">*</span>
+                </label>
+                <div class="folder-form__control">
+                    <svg class="folder-form__control-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+                    <input class="folder-form__input" name="name" id="name" type="text" placeholder="Enter folder name..." required>
+                </div>
+            </div>
+
+            <div class="folder-form__row">
+                <label class="folder-form__label" for="parentId">Directory</label>
+                <div class="folder-form__control">
+                    <svg class="folder-form__control-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+                    <select class="folder-form__select" name="parentId" id="parentId" aria-describedby="parentId-hint">
+                        <option value="0" selected>Root</option>
+                        <% for (const directory of directories) { %>
+                            <option value="<%= directory.id %>"><%= directory.name %></option>
+                        <% } %>
+                    </select>
+                    <svg class="folder-form__chevron" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </div>
+                <p class="folder-form__hint" id="parentId-hint">Choose where to create the folder.</p>
+            </div>
         </div>
-        <div class="folder-form__row">
-            <label id="parentId" for="parentId">Directory</label>
-            <select name="parentId" id="parentId">
-                <option value="0" selected>Root</option>
-                <%for(directory of directories){ %>
-                    <option value="<%=directory.id%>"><%=directory.name%></option>
-                <% } %>
-            </select>
-        </div>
-        <div class="folder-form_row">
-            <button type="submit">Create Folder</button>
-            <a href="/folders">Cancel</a>
-        </div>
+
+        <footer class="folder-form__footer">
+            <a class="folder-form__btn folder-form__btn--secondary" href="/folders">Cancel</a>
+            <button class="folder-form__btn folder-form__btn--primary" type="submit">
+                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                Create Folder
+            </button>
+        </footer>
     </form>
-    
 </body>
 </html>

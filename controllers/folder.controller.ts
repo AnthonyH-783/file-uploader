@@ -8,6 +8,10 @@ import { deleteFilesFromStorage } from "../db/supabase";
 import { URLSearchParams } from "node:url";
 import { format } from "date-fns";
 import { matchedData, validationResult } from "express-validator";
+import { toFileRow } from "./utils/fileDisplay";
+import { splitPage } from "./utils/pagination";
+import { isSortField, SortField } from "./utils/sort";
+import { pageHref } from "./utils/pageHref";
 
 export const createFolder = async (req:Request, res:Response, next:NextFunction) => {
     try{
@@ -47,13 +51,16 @@ export const viewFolder = async(req:Request, res:Response, next:NextFunction) =>
         const ownerId = res.locals.currentUser.id;
         const folderId = req.params.folderId ?? null;
         // Destructuring query params with default 
-        const {sort = "name", dir = "asc"} = req.query;
+        const sort: SortField = isSortField(req.query.sort) ?
+                                req.query.sort : 
+                                "name";
+        const dir : "asc" | "desc" = req.query.dir === "desc" ? "desc" : "asc";
         const page   = Math.max(1, Number(req.query.page) || 1);
         const limit  = Math.min(20, Math.max(1, Number(req.query.limit) || 20));
         // Sorting object parameter used by prisma
-        const orderBy = {[sort as string] : dir as "asc" | "desc"};
+         const orderBy = { [sort]: dir };
 
-        // Getting folder
+        // Getting parent folder
         let folder = null;
         if(folderId){
             folder = await prisma.folder.findFirst({
@@ -61,30 +68,57 @@ export const viewFolder = async(req:Request, res:Response, next:NextFunction) =>
             });
             if(!folder) throw new AppError(404, "Folder not found");
         }
-    
+        // Counting folders and files to display in pagination
+        const [folderCount, fileCount] = await Promise.all([
+            prisma.folder.count({ where: {ownerId, parentId: folderId as string} }),
+            prisma.file.count({ where: {ownerId, folderId: folderId as string} }),
+        ]);
+        const totalCount = folderCount + fileCount;
+        const offset = (page - 1) * limit;
+        const {folderTake, fileSkip, fileTake} = splitPage(offset, folderCount, limit);
+        // Retrieving children
         const [folders, files] = await Promise.all([
             prisma.folder.findMany({
                 where: {ownerId, parentId: folderId as string},
                 orderBy,
-                take: limit as number, 
-                skip: ((page as number) - 1) * (limit as number)
+                skip: offset,
+                take: folderTake
             }),
             prisma.file.findMany({
                 where: {ownerId, folderId: folderId as string},
                 orderBy,
-                take: limit as number,
-                skip: ((page as number) - 1) * (limit as number)
+                skip: fileSkip,
+                take: fileTake
             })
         ]);
+        // Building what the view needs
         const formatedDates = formatLastUpdated([...folders, ...files]);
         const backLink = (folder?.parentId) ? `/folders/${folder.parentId}`
                                             : '/folders';
-        let isRoot = false;
-        if(req.originalUrl === req.baseUrl) isRoot = true;
-
+        const showCount = folders.length + files.length;
+        const firstItem = showCount === 0 ? 0 : offset + 1;
+        const lastItem = offset + showCount;
+        const prevHref = page > 1 ? pageHref(page - 1, sort, dir, limit) : null;
+        const nextHref = lastItem < totalCount ? pageHref(page + 1, sort, dir, limit) : null;
+        // Rendering view
         res.render("index", {
-            selected: "folders", folder, folders, files, page,
-            formatedDates, error: req.query.error ?? null, backLink, isRoot
+            selected: "folders",
+            folder,
+            folders,
+            files: files.map(toFileRow),
+            formatedDates,
+            error: req.query.error ?? null,
+            backLink,
+            isRoot: folderId === null,
+            pagination: {
+                page,
+                totalCount,
+                summary: totalCount === 0
+                    ? "No items"
+                    : `Showing ${firstItem}–${lastItem} of ${totalCount} ${totalCount === 1 ? "item" : "items"}`,
+                prevHref,
+                nextHref
+            },
         });
         
     }

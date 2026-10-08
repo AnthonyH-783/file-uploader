@@ -1,0 +1,218 @@
+/* All tokens come from variables.css */
+.page-center {
+    box-sizing: border-box;
+    min-height: 100vh;
+    margin: 0;
+    padding: var(--space-4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-0);
+}
+
+.folder-form {
+    display: flex;
+    flex-direction: column;
+    width: min(100%, 48rem);
+    font-family: var(--font-sans);
+    background: var(--surface-1);
+    color: var(--text-primary);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm), var(--shadow-md);
+}
+
+/* ---------- Header ---------- */
+.folder-form__header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-5);
+    padding: var(--space-6) var(--space-6) 0;
+}
+
+.folder-form__header__icon {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    background-color: var(--color-accent-soft);
+    color: var(--color-accent);
+    border-radius: var(--radius-md);
+}
+
+.folder-form__header__icon svg {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+.folder-form__header__title h1 {
+    margin: 0;
+    font-size: var(--text-3xl);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-snug);
+}
+
+.folder-form__header__title p {
+    margin: var(--space-1) 0 0;
+    font-size: var(--text-md);
+    color: var(--text-secondary);
+}
+
+/* ---------- Body / fields ---------- */
+.folder-form__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    padding: var(--space-6);
+}
+
+.folder-form__row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.folder-form__label {
+    font-size: var(--text-md);
+    font-weight: var(--weight-semibold);
+}
+
+.folder-form__required {
+    margin-left: var(--space-1);
+    color: var(--color-danger);
+}
+
+.folder-form__control {
+    position: relative;
+}
+
+.folder-form__control-icon,
+.folder-form__chevron {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--text-muted);
+    pointer-events: none; /* clicks pass through to the input/select */
+}
+
+.folder-form__control-icon { left: var(--space-4); }
+.folder-form__chevron { right: var(--space-4); color: var(--text-primary); }
+
+.folder-form__input,
+.folder-form__select {
+    box-sizing: border-box;
+    width: 100%;
+    padding: var(--space-3) var(--space-4) var(--space-3) var(--space-7); /* left room for the icon */
+    font: inherit;
+    font-size: var(--text-md);
+    line-height: var(--leading-base);
+    color: var(--text-primary);
+    background: var(--surface-2);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.folder-form__select {
+    appearance: none;
+    padding-right: var(--space-7); /* room for the chevron */
+    cursor: pointer;
+}
+
+.folder-form__input:hover,
+.folder-form__select:hover {
+    border-color: var(--border-strong);
+}
+
+.folder-form__input::placeholder {
+    color: var(--text-muted);
+    opacity: 1;
+}
+
+.folder-form__input:focus,
+.folder-form__select:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+
+.folder-form__hint {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+/* ---------- Footer / buttons ---------- */
+.folder-form__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    padding: var(--space-5) var(--space-6);
+    border-top: 1px solid var(--border-subtle);
+}
+
+.folder-form__btn {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-width: 7rem;
+    padding: var(--space-3) var(--space-5);
+    font: inherit;
+    font-size: var(--text-base);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-snug);
+    text-decoration: none;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.folder-form__btn svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.folder-form__btn:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+.folder-form__btn--secondary {
+    background: var(--surface-1);
+    color: var(--text-primary);
+    border-color: var(--border-default);
+}
+
+.folder-form__btn--secondary:hover {
+    background: var(--surface-3);
+}
+
+.folder-form__btn--primary {
+    background: var(--color-accent);
+    color: var(--surface-1); /* white text on accent */
+    box-shadow: var(--shadow-accent);
+}
+
+.folder-form__btn--primary:hover {
+    background: var(--color-accent-hover);
+}
+
+/* ---------- Small screens ---------- */
+/* Custom properties can't be used in media query conditions, so 480px stays literal */
+@media (max-width: 480px) {
+    .folder-form__header { padding: var(--space-5) var(--space-5) 0; }
+    .folder-form__body { padding: var(--space-5); }
+    .folder-form__footer {
+        flex-direction: column-reverse;
+        padding: var(--space-5);
+    }
+    .folder-form__btn { width: 100%; }
+}

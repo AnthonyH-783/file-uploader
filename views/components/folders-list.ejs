@@ -1,90 +1,136 @@
 <section class="folders-section">
-    <div class="folders-section__header">
-        <div>
-            <h3>Folders</h3>
-            <p class="folders-section__url"></p>
-        </div>
-        <a href="/folders/new">
-            <button class="new-folder-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-                <span>Create Folder</span>
-            </button>
-        </a>
-        <% if(!isRoot){ %>
-        <a class="folders-section__backlink" href="<%=backLink%>">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-        </a>
-        <% } %>
-    
-    </div>
-
-    <table class="folders-section__table">
-        <thead>
-            <tr>
-                <th span="col">Name</th>
-                <th span="col">Type</th>
-                <th span="col">Modified</th>
-                <th span="col">Actions</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            <% for(const childFolder of folders){ %>
-                <tr>
-                    <td><%=childFolder.name%></td>
-                    <td>Folder</td>
-                    <td><%=formatedDates[childFolder.id] ?? 'N/A'%></td>
-                    <td><div class="actions">
-                        <a href="/folders/<%=childFolder.id%>">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-icon lucide-eye"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
-                        <a href="/folders/<%=childFolder.id%>/edit">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-pen-icon lucide-square-pen"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/></svg>
-                        </a>
-                        <a href="/folders/<%=childFolder.id%>/delete">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2-icon lucide-trash-2"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                        </a>
-                        </div>
-                    </td>
-                </tr>
-            <% } %>    
-            <% for(const file of files){ %>
-                <tr>
-                    <td><%=file.name%></td>
-                    <td><%=file.mimeType%></td>
-                    <td><%=formatedDates[file.id]%></td>
-                    <td><div class="actions">
-                        <a href="/files/<%=file.id%>">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-icon lucide-eye"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
-                        </a>
-                        <a href="/files/<%=file.id%>/edit">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-pen-icon lucide-square-pen"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/></svg>
-                        </a>
-                        <a href="/files/<%=file.id%>/delete">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2-icon lucide-trash-2"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                        </a>
-                    </div></td>
-                </tr>
+    <header class="folders-section__header">
+        <div class="folders-section__heading">
+            <% if (!isRoot) { %>
+                <a class="folders-section__back" href="<%= backLink %>" aria-label="Back to parent folder">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+                </a>
             <% } %>
-        </tbody>
-
-    </table>
-    <% if(folders.length === 0 && files.length === 0){%>
-        <span>Selected folder is empty</span>
-    <% } %>
-            <div class="folders-section__nav">
-            <p>Showing</p>
-            <div class="folders-section__nav__btns">
-                <div>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left-icon lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
-                </div>
-                <div>
-                    <%=page%>
-                </div>
-                <div>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right-icon lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
-                </div>
-
+            <div class="folders-section__icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+            </div>
+            <div>
+                <h1 class="folders-section__title">Folders</h1>
+                <p class="folders-section__subtitle">Manage your files and folders. Create, organize, and access your uploads.</p>
             </div>
         </div>
+
+        <a class="folders-section__create" href="/folders/new">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            <span>Create Folder</span>
+        </a>
+    </header>
+
+    <div class="folders-section__card">
+        <div class="folders-section__table-wrap">
+            <table class="folders-section__table">
+                <thead>
+                    <tr>
+                        <th scope="col" class="folders-section__col--name">Name</th>
+                        <th scope="col" class="folders-section__col--type">Type</th>
+                        <th scope="col" class="folders-section__col--modified">Modified</th>
+                        <th scope="col" class="folders-section__col--size">Size</th>
+                        <th scope="col" class="folders-section__col--actions">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <% for (const childFolder of folders) { %>
+                        <tr>
+                            <td class="folders-section__col--name">
+                                <a class="folders-section__name" href="/folders/<%= childFolder.id %>">
+                                    <span class="folders-section__item-icon folders-section__item-icon--folder" aria-hidden="true">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+                                    </span>
+                                    <span class="folders-section__name-text"><%= childFolder.name %></span>
+                                </a>
+                            </td>
+                            <td class="folders-section__col--type">
+                                <span class="folders-section__badge folders-section__badge--folder">FOLDER</span>
+                            </td>
+                            <td class="folders-section__col--modified"><%= formatedDates[childFolder.id] ?? 'N/A' %></td>
+                            <td class="folders-section__col--size">—</td>
+                            <td class="folders-section__col--actions">
+                                <div class="folders-section__actions">
+                                    <a class="folders-section__action" href="/folders/<%= childFolder.id %>" aria-label="Open <%= childFolder.name %>" title="Open">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
+                                    </a>
+                                    <a class="folders-section__action" href="/folders/<%= childFolder.id %>/edit" aria-label="Edit <%= childFolder.name %>" title="Edit">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/></svg>
+                                    </a>
+                                    <a class="folders-section__action folders-section__action--danger" href="/folders/<%= childFolder.id %>/delete" aria-label="Delete <%= childFolder.name %>" title="Delete">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    <% } %>
+
+                    <% for (const file of files) { %>
+                        <tr>
+                            <td class="folders-section__col--name">
+                                <a class="folders-section__name" href="/files/<%= file.id %>">
+                                    <span class="folders-section__item-icon folders-section__item-icon--<%= file.kind.role %>" aria-hidden="true">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+                                    </span>
+                                    <span class="folders-section__name-text"><%= file.name %></span>
+                                </a>
+                            </td>
+                            <td class="folders-section__col--type">
+                                <span class="folders-section__badge folders-section__badge--<%= file.kind.role %>" title="<%= file.mimeType %>"><%= file.kind.label %></span>
+                            </td>
+                            <td class="folders-section__col--modified"><%= formatedDates[file.id] ?? 'N/A' %></td>
+                            <td class="folders-section__col--size"><%= file.sizeLabel %></td>
+                            <td class="folders-section__col--actions">
+                                <div class="folders-section__actions">
+                                    <a class="folders-section__action" href="/files/<%= file.id %>" aria-label="Open <%= file.name %>" title="Open">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
+                                    </a>
+                                    <a class="folders-section__action" href="/files/<%= file.id %>/edit" aria-label="Edit <%= file.name %>" title="Edit">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/></svg>
+                                    </a>
+                                    <a class="folders-section__action folders-section__action--danger" href="/files/<%= file.id %>/delete" aria-label="Delete <%= file.name %>" title="Delete">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    <% } %>
+
+                    <% if (pagination.totalItems === 0) { %>
+                        <tr>
+                            <td class="folders-section__empty" colspan="5">This folder is empty.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="folders-section__footer">
+            <p class="folders-section__count"><%= pagination.summary %></p>
+            <nav class="folders-section__pagination" aria-label="Pagination">
+                <% if (pagination.prevHref) { %>
+                    <a class="folders-section__page-btn" href="<%= pagination.prevHref %>" aria-label="Previous page">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+                    </a>
+                <% } else { %>
+                    <span class="folders-section__page-btn" aria-disabled="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+                    </span>
+                <% } %>
+
+                <span class="folders-section__page-btn folders-section__page-btn--current" aria-current="page"><%= pagination.page %></span>
+
+                <% if (pagination.nextHref) { %>
+                    <a class="folders-section__page-btn" href="<%= pagination.nextHref %>" aria-label="Next page">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                    </a>
+                <% } else { %>
+                    <span class="folders-section__page-btn" aria-disabled="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                    </span>
+                <% } %>
+            </nav>
+        </div>
+    </div>
 </section>

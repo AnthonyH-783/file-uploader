@@ -10,6 +10,7 @@
 @import "./components/navbar.css";
 @import "./components/folders-list.css";
 @import "./components/icons.css";
+@import "./pages//folder-form.css";
 
 /* Page imports */
 @import "./pages/index.css";

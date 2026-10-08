@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import prisma from "../db/prisma";
+import { toFileRow } from "./utils/fileDisplay";
+
 export const getIndex = async (req: Request, res: Response, next: NextFunction) => {
     // Retrieving user and folder info
     const ownerId = res.locals.currentUser.id;
@@ -9,6 +11,7 @@ export const getIndex = async (req: Request, res: Response, next: NextFunction) 
         
     });
     const categories = folders.map((folder) => folder.name);
+    const currentPage = Math.max(1, Number(req.query.page) || 1);
     const MAX_SIZE = "10 MB";
     res.render("index", {selected: tab, categories, folders, MAX_SIZE});
 }
