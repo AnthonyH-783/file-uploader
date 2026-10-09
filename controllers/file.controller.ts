@@ -9,6 +9,7 @@ import { Folder } from "../generated/prisma/client";
 import { URLSearchParams } from "node:url";
 import { getFileURL } from "../db/supabase";
 import { matchedData, validationResult} from "express-validator";
+import { getPreviewKind, getExtension, formatBytes } from "./utils/previewKind";
 
 const ALLOWED_FILE_TYPES = ['image', 'video', 'application', 'audio'];
 
@@ -168,13 +169,14 @@ export const showFile = async (req:Request, res:Response, next:NextFunction) => 
         
         
         res.render("pages/file-view", {
-            file, // meta-data contains name, folder, mime type and more
-            url,
-            mediaType,
-            mediaSubtype,
-            backLink
+        file,
+        url,          
+        downloadUrl: url,    
+        backLink,
+        previewKind: getPreviewKind(file.mimeType),
+        extension: getExtension(file.name),
+        sizeLabel: formatBytes(file.size),
         });
-
 
     }
     catch(err){

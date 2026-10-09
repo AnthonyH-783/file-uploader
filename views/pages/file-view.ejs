@@ -3,43 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File <%=file.name%></title>
+    <title><%= file.name %></title>
+    <link rel="stylesheet" href="/stylesheets/main.css">
+    <link rel="stylesheet" href="/stylesheets/pages/file-view.css">
 </head>
-<body>
-    <section class="file__display">
-        <a href="<%=backLink%>" class="file__display__back-link">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-        </a>
-        <h2><%=file.name%></h2>
-        <div class="file__display__media-container">
-            <% if(mediaType === 'image'){%>
-                <img src="<%=url%>" alt="<%=file.name%>">
-            <%} else if(mediaType === 'video'){ %>
-                <video controls>
-                    <source src="<%=url%>" type="<%=file.mimeType%>">
-                    Your browser does not support the video tag. Click
-                    <a href="<%=url%>">this link</a> to download
+<body class="file-page">
+    <main class="file-view">
+
+        <header class="file-view__bar">
+            <a class="file-view__icon-btn" href="<%= backLink %>" aria-label="Back">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+            </a>
+
+            <div class="file-view__heading">
+                <h1 class="file-view__title" title="<%= file.name %>"><%= file.name %></h1>
+                <p class="file-view__meta">
+                    <span class="file-view__tag"><%= extension %></span>
+                    <% if (locals.sizeLabel) { %><span><%= sizeLabel %></span><% } %>
+                </p>
+            </div>
+
+            <nav class="file-view__actions" aria-label="File actions">
+                <a class="file-view__btn file-view__btn--primary" href="<%= locals.downloadUrl ?? url %>">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
+                    <span>Download</span>
+                </a>
+                <a class="file-view__icon-btn" href="/files/<%= file.id %>/edit" aria-label="Edit file">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.17 6.81a1 1 0 0 0-3.99-3.98L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z"/></svg>
+                </a>
+                <a class="file-view__icon-btn file-view__icon-btn--danger" href="/files/<%= file.id %>/delete" aria-label="Delete file">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </a>
+            </nav>
+        </header>
+
+        <section class="file-view__stage file-view__stage--<%= previewKind %>">
+            <% if (previewKind === "image") { %>
+                <img class="file-view__media" src="<%= url %>" alt="<%= file.name %>">
+
+            <% } else if (previewKind === "video") { %>
+                <video class="file-view__media" controls preload="metadata">
+                    <source src="<%= url %>" type="<%= file.mimeType %>">
                 </video>
-                <%} else if(mediaSubtype === 'pdf'){%>
-                    <object data="<%=url%>" type="<%=file.mimeType%>">
-                        <p> Your browser does not support embedded pdfs
-                            <a href="<%=url%>">Download the pdf</a> instead
-                        </p>
-                    </object>
-                <%} else if(mediaType === 'audio'){%>
-                    <audio controls>
-                        <source src="<%=url%>" type="<%=file.mimeType%>">
-                        Your browser does not support audio elements.
-                        <a href="<%=url%>">Click this link</a>
+
+            <% } else if (previewKind === "audio") { %>
+                <div class="file-view__audio">
+                    <div class="file-view__glyph" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                    </div>
+                    <audio controls preload="metadata">
+                        <source src="<%= url %>" type="<%= file.mimeType %>">
                     </audio>
-                <%} else{%>
-                    <p>Here is <a href="<%=url%>">a link</a> to the requested file</p>
-                <% } %>
+                </div>
 
-        </div>
+            <% } else if (previewKind === "pdf") { %>
+                <object class="file-view__frame" data="<%= url %>" type="application/pdf">
+                    <div class="file-view__empty">
+                        <p class="file-view__empty-title">PDF preview isn't supported in this browser</p>
+                        <a class="file-view__btn file-view__btn--primary" href="<%= url %>">Open PDF</a>
+                    </div>
+                </object>
 
+            <% } else if (previewKind === "text") { %>
+                <iframe class="file-view__frame file-view__frame--text" src="<%= url %>" title="<%= file.name %>" sandbox></iframe>
 
-    </section>
-    
+            <% } else { %>
+                <div class="file-view__empty">
+                    <div class="file-view__glyph" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+                        <span class="file-view__glyph-label"><%= extension %></span>
+                    </div>
+                    <p class="file-view__empty-title">No preview available</p>
+                    <p class="file-view__empty-text"><%= extension %> files can't be shown in the browser. Download it to open it.</p>
+                    <a class="file-view__btn file-view__btn--primary" href="<%= locals.downloadUrl ?? url %>">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
+                        <span>Download</span>
+                    </a>
+                </div>
+            <% } %>
+        </section>
+
+    </main>
 </body>
 </html>
