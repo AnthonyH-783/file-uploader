@@ -8,6 +8,6 @@ export const validateFileUpdate = () : ValidationChain[] => {
     return [
         body("name").trim().notEmpty().withMessage(emptyErr)
         .isLength({max: MAX_NAME_LENGTH}).withMessage(lengthErr(MAX_NAME_LENGTH)),
-        body("folderId").trim().notEmpty().withMessage("Parent Folder not provided")
+        body("targetDirId").trim().notEmpty().withMessage("Parent Folder not provided")
     ]
 }

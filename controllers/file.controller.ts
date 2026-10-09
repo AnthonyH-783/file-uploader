@@ -204,7 +204,7 @@ export const getFileEditForm = async(req:Request, res:Response, next:NextFunctio
             where: {ownerId, id: file.folderId as string}
         });
         const backLink = (file.folderId === null) ? "/folders" : `/folders/${file.folderId}`;
-        
+        console.log(categories);
         res.render("pages/edit-form", {
             docType,
             currentCategory,
@@ -229,12 +229,12 @@ export const updateFile = async(req:Request, res:Response, next:NextFunction) =>
             req.session.formErrors = errors.array().map((err) => err.msg);
             return req.session.save(() => res.redirect(`/files/${fileId}/edit`));
         }
-         const {name, folderId} = matchedData(req);
+         const {name, targetDirId} = matchedData(req);
          await prisma.file.update({
             where: {ownerId, id: fileId as string},
-            data: {name, folderId}
+            data: {name, folderId: targetDirId}
          });   
-         res.redirect(`/folders/${folderId}`);
+         res.redirect(`/folders/${targetDirId}`);
     }
     catch(err){
         next(err);
