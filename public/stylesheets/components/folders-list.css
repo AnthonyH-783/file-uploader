@@ -342,6 +342,9 @@
     text-decoration: none;
 
 }
+.hidden{
+    display: none;
+}
 
 a.folders-section__page-btn:hover {
     color: var(--text-primary);

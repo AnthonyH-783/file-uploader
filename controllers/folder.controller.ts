@@ -158,7 +158,7 @@ export const moveFolder = async (req:Request, res:Response, next:NextFunction) =
         const folderId = req.params.folderId as string;
         const {targetDirId, originId} = req.body;
         // Skipping if new directory not selected
-        if(originId === targetDirId){
+        if(!targetDirId || originId === targetDirId){
             return next();
         }
 
@@ -327,6 +327,7 @@ export const getFolderCreationForm = async(req:Request, res:Response, next:NextF
         const directories = await prisma.folder.findMany({
             where: {ownerId}
         });
+  
         res.render("pages/folder-form", {
             directories
         });
