@@ -135,7 +135,7 @@ export const renameFolder = async (req:Request, res:Response, next:NextFunction)
     // Getting request information
     const {folderId} = req.params;
     const {name, currentName} = req.body;
-    if(name === currentName) return next();
+    if(name === currentName) return res.redirect(`/folders/${folderId}`);
     // Finding and validating folder
     if(!folderId || typeof folderId !== "string" || !ownerId) throw new AppError(403, "Target folder could not be identified");
     await prisma.folder.update({
