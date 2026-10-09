@@ -29,12 +29,21 @@ export const requireFileOwner = async (req: Request, res: Response, next: NextFu
 export const requireFolderOwner = async (req: Request, res: Response, next: NextFunction) => {
     try{
         let folderId = req.params.folderId;
+        let folder = null;
+        const ownerId = req.user!.id;
         if(typeof folderId !== 'string'){
-            folderId = "0"; // Root folder by default
+            folder = await prisma.folder.findFirst({
+                where: {ownerId},
+                orderBy: {createdAt: "asc"}
+            });
         }
-        const folder = await prisma.folder.findUnique({
+        else{
+            folder = await prisma.folder.findUnique({
             where: {id: folderId}
         });
+
+        }
+
         // If file doesn't exist
         if(!folder){
             throw new AppError(404, "Folder  not found");

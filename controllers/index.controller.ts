@@ -11,7 +11,6 @@ export const getIndex = async (req: Request, res: Response, next: NextFunction) 
         
     });
     const categories = folders.map((folder) => folder.name);
-    const currentPage = Math.max(1, Number(req.query.page) || 1);
     const MAX_SIZE = "10 MB";
     res.render("index", {selected: tab, categories, folders, MAX_SIZE});
 }
