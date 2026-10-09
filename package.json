@@ -7,6 +7,8 @@
   "scripts": {
     "dev": "concurrently -n server,client \"tsx --watch app.ts\" \"tsc -p client --watch\"",
     "build:client": "tsc -p client",
+    "build": "prisma generate && npm run build:client",
+    "start": "tsx app.ts",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.client.json --noEmit"
   },
   "keywords": [],
