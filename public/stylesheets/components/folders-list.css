@@ -96,14 +96,17 @@
     border-radius: var(--radius-sm);
     box-shadow: var(--shadow-accent);
     text-decoration: none;
-    transition: background-color var(--transition-fast);
+ 
 }
+   .folders-section__create:hover {
+       color: var(--surface-1);
+       background: var(--color-accent-hover);
+   }
 
-.folders-section__create:hover {
-    background: var(--color-accent-hover);
-}
+
 
 .folders-section__create svg {
+    color: white;
     width: 1.25rem;
     height: 1.25rem;
 }
@@ -337,7 +340,7 @@
     border: 1px solid var(--border-default);
     border-radius: var(--radius-sm);
     text-decoration: none;
-    transition: background-color var(--transition-fast), color var(--transition-fast);
+
 }
 
 a.folders-section__page-btn:hover {

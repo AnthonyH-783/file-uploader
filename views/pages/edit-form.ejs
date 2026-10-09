@@ -3,34 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit <%=docType%></title>
+    <title>Edit <%= docType %></title>
+    <link rel="stylesheet" href="/stylesheets/main.css">
+    <link rel="stylesheet" href="/stylesheets/pages/edit-form.css">
 </head>
-<body>
-    <form class="edit-form" action="/<%=docType%>s/<%=docId%>/edit" method="post">
-        <h3>Edit <%=docType%></h3>
-        <% if(locals.formErrors.length !== 0){%>
-            <%-include("../components/error")%>
-        <% } %>
-        <div class="edit-form__name">
-            <label for="name"><%=docType%> name</label>
-            <input name="name" type="text" value="<%=docName%>">
-        </div>
-        <div class="edit-form__location">
-            <label for="location"><%=docType%> location</label>
-            <select name="targetDirId" id="location">
-                <option value="<%=currentCategory?.id%>" selected><%=currentCategory?.name ?? "Root Folder"%></option>
-                <% for(const category of categories){%>
-                <option value="<%=category.id%>" <%=category.id === currentCategory?.id ? 'selected' : ''%> >
-                    <%=category.name%>
-                </option>
+<body class="edit-page">
+    <form class="edit-form" action="/<%= docType %>s/<%= docId %>/edit" method="post">
+
+        <header class="edit-form__header">
+            <div class="edit-form__badge" aria-hidden="true">
+                <% if (docType === "folder") { %>
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+                <% } else { %>
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
                 <% } %>
-            </select>
+            </div>
+            <div>
+                <h1 class="edit-form__title">Edit <%= docType %></h1>
+                <p class="edit-form__subtitle">Rename it or move it to another folder.</p>
+            </div>
+        </header>
+
+        <div class="edit-form__body">
+            <% if (locals.formErrors && formErrors.length !== 0) { %>
+                <%- include("../components/error") %>
+            <% } %>
+
+            <div class="edit-form__field">
+                <label class="edit-form__label" for="name">
+                    <%= docType %> name <span class="edit-form__required">*</span>
+                </label>
+                <div class="edit-form__control">
+                    <svg class="edit-form__icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+                    <input class="edit-form__input" id="name" name="name" type="text"
+                           value="<%= docName %>" placeholder="Enter <%= docType %> name..." required>
+                </div>
+            </div>
+
+            <div class="edit-form__field">
+                <label class="edit-form__label" for="location">Directory</label>
+                <div class="edit-form__control edit-form__control--select">
+                    <svg class="edit-form__icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+                    <select class="edit-form__input" name="targetDirId" id="location">
+                        <option value="" <%= currentCategory ? "" : "selected" %>>Root</option>
+                        <% for (const category of categories) { %>
+                            <option value="<%= category.id %>" <%= category.id === currentCategory?.id ? "selected" : "" %>>
+                                <%= category.name %>
+                            </option>
+                        <% } %>
+                    </select>
+                    <svg class="edit-form__chevron" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </div>
+                <p class="edit-form__hint">Choose where the <%= docType %> should live.</p>
+            </div>
+
+            <input type="hidden" name="originId" value="<%= currentCategory?.id ?? "" %>">
+            <input type="hidden" name="currentName" value="<%= docName %>">
         </div>
-        <input type="text" name="originId" value="<%=currentCategory ? currentCategory.id : null%>" hidden>
-        <input type="text" name="currentName" value="<%=docName%>">
-        <button type="submit">Edit</button>
-        <a href="<%=backLink%>">Cancel</a>
+
+        <footer class="edit-form__actions">
+            <a class="edit-form__btn edit-form__btn--secondary" href="<%= backLink %>">Cancel</a>
+            <button class="edit-form__btn edit-form__btn--primary" type="submit">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                Save Changes
+            </button>
+        </footer>
     </form>
-    
 </body>
 </html>

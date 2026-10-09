@@ -1,0 +1,264 @@
+.delete-page {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: var(--space-5) var(--space-4);
+  background: var(--surface-0);
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  line-height: var(--leading-base);
+  box-sizing: border-box;
+}
+
+.delete-form {
+  width: 100%;
+  max-width: 60rem;
+  background: var(--surface-1);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+/* Header */
+.delete-form__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-6) var(--space-6) 0;
+}
+
+.delete-form__badge {
+  flex-shrink: 0;
+  width: var(--space-8);
+  height: var(--space-8);
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-md);
+  background: var(--tint-danger);
+  color: var(--color-danger);
+}
+
+.delete-form__badge svg {
+  width: var(--space-6);
+  height: var(--space-6);
+}
+
+.delete-form__title {
+  margin: 0;
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  text-transform: capitalize;
+}
+
+.delete-form__subtitle {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+}
+
+/* Body */
+.delete-form__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+}
+
+.delete-form__question {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+}
+
+/* Preview */
+.delete-form__preview {
+  display: grid;
+  place-items: center;
+  min-height: calc(var(--space-8) * 2);
+  padding: var(--space-4);
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.delete-form__media {
+  display: block;
+  max-width: 100%;
+  max-height: 20rem;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}
+
+.delete-form__pdf {
+  width: 100%;
+  height: 24rem;
+  border-radius: var(--radius-sm);
+}
+
+.delete-form__audio {
+  width: 100%;
+}
+
+.delete-form__folder {
+  width: var(--space-8);
+  height: var(--space-8);
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.delete-form__folder svg {
+  width: var(--space-6);
+  height: var(--space-6);
+}
+
+.delete-form__fallback {
+  margin: 0;
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.delete-form__fallback a {
+  color: var(--color-accent);
+  font-weight: var(--weight-medium);
+}
+
+.delete-form__fallback a:hover {
+  color: var(--color-accent-hover);
+}
+
+/* Name row */
+.delete-form__name {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.delete-form__name-label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+
+.delete-form__name-value {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  word-break: break-word;
+}
+
+/* Warning */
+.delete-form__warning {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-base);
+  color: var(--color-error-text);
+  background: var(--color-error-bg);
+  border: 1px solid var(--color-error-border);
+  border-radius: var(--radius-sm);
+}
+
+.delete-form__warning svg {
+  flex-shrink: 0;
+  width: var(--space-5);
+  height: var(--space-5);
+}
+
+/* Footer */
+.delete-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.delete-form__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-width: calc(var(--space-8) * 2);
+  height: calc(var(--space-7) + var(--space-2));
+  padding: 0 var(--space-5);
+  box-sizing: border-box;
+  font: inherit;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+  text-transform: capitalize;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.delete-form__btn svg {
+  width: var(--space-5);
+  height: var(--space-5);
+}
+
+.delete-form__btn--secondary {
+  color: var(--text-primary);
+  background: var(--surface-1);
+  border: 1px solid var(--border-default);
+}
+
+.delete-form__btn--secondary:hover {
+  background: var(--surface-3);
+}
+
+.delete-form__btn--danger {
+  color: var(--surface-1);
+  background: var(--color-danger);
+  border: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.delete-form__btn--danger:hover {
+  background: var(--color-error-text);
+}
+
+.delete-form__btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-error-border);
+}
+
+/* Small screens */
+@media (max-width: 600px) {
+  .delete-form__header,
+  .delete-form__body,
+  .delete-form__actions {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+
+  .delete-form__badge {
+    width: var(--space-7);
+    height: var(--space-7);
+  }
+
+  .delete-form__title {
+    font-size: var(--text-2xl);
+  }
+
+  .delete-form__actions {
+    flex-direction: column-reverse;
+  }
+
+  .delete-form__btn {
+    width: 100%;
+  }
+}
