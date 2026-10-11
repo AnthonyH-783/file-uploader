@@ -6,7 +6,7 @@ import "dotenv/config";
 
 
 // Creating adapter and passing it to prisma client
-const connectionString = `${process.env.DATABASE_URL}`;
+const connectionString = `${process.env.SUPABASE_DB_URL}`;
 const adapter = new PrismaPg({connectionString});
 const prisma = new PrismaClient({adapter});
 
