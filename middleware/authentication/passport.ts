@@ -12,7 +12,7 @@ const verifyCallback = async (email:string, password:string , done: verifyDone) 
 
     try{
         const user = await prisma.user.findUnique({
-            where: {email: `${email}`}
+            where: {email}
         });
         if(!user){
             return done(null, false, {message: "Wrong email or password"});
